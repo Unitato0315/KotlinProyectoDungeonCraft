@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">DungeonCrafter</string>
+    <string name="email">EMAIL</string>
+    <string name="password">CONTRASEÑA</string>
+    <string name="iniciosesion">INICIAR SESSION</string>
+    <string name="registro">REGISTRARSE</string>
+    <string name="google">INICIAR SESION CON GOOGLE</string>
+    <string name="cerrar">CERRAR SESION</string>
+    <string name="idioma">IDIOMA</string>
+    <string name="configuracion">CONFIGURACION</string>
 </resources>
