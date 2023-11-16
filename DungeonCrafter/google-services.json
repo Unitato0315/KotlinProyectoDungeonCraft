@@ -12,7 +12,28 @@
           "package_name": "com.example.dungeoncrafter"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "221295858051-01sdk05m1129jalfhuuaa90531nr6k3b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dungeoncrafter",
+            "certificate_hash": "b18e11902e9fdfff340bbd19c86475bf50457da7"
+          }
+        },
+        {
+          "client_id": "221295858051-guop5vb4hh60rmbsh3oq1c30sp80uf9n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dungeoncrafter",
+            "certificate_hash": "3c9ac45c8849d7021c35b5350abcc370f72b9829"
+          }
+        },
+        {
+          "client_id": "221295858051-1jh5cpgh30vidcrjv6b1d7mu8aedi5uq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCU6AL4Xoi_OUhaCCwCqIPUrLBufzlMJ5Y"
@@ -20,7 +41,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "221295858051-1jh5cpgh30vidcrjv6b1d7mu8aedi5uq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
