@@ -3,6 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/option_1"
+        android:title="@string/cerrar"
+        android:icon="@drawable/user_slash_solid__1_"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/option_2"
         android:title="@string/opciones"
         android:icon="@drawable/gear_solid"
         app:showAsAction="ifRoom"/>

@@ -1,6 +1,7 @@
 package com.example.dungeoncrafter
 
 import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
             if (binding.edEmail.text?.isNotEmpty() == true && binding.edPass.text?.isNotEmpty() == true ){
                 firebaseauth.signInWithEmailAndPassword(binding.edEmail.text.toString(),binding.edPass.text.toString()).addOnCompleteListener {
                     if (it.isSuccessful){
+                        irMenuPrincipal(it.result?.user?.email?:"")
                         Toast.makeText(this, "Conexión correcta", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this, "Conexión erronea", Toast.LENGTH_SHORT).show()
@@ -49,6 +51,7 @@ class MainActivity : AppCompatActivity() {
             if (binding.edEmail.text?.isNotEmpty() == true && binding.edPass.text?.isNotEmpty() == true ){
                 firebaseauth.createUserWithEmailAndPassword(binding.edEmail.text.toString(),binding.edPass.text.toString()).addOnCompleteListener {
                     if (it.isSuccessful){
+                        irMenuPrincipal(it.result?.user?.email?:"")
                         Toast.makeText(this, "Conexión correcta", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this, "Conexión erronea", Toast.LENGTH_SHORT).show()
@@ -107,16 +110,24 @@ class MainActivity : AppCompatActivity() {
     }
     private fun actualizarUI(account: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-        //pido un token, y con ese token, si todo va bien obtengo la info.
+        //pido un token, y con ese token, si todo va bien obtenga la info.
         firebaseauth.signInWithCredential(credential).addOnCompleteListener {
             if (it.isSuccessful){
-                //hacer account. y ver otras propiedades interesantes.
                 Toast.makeText(this,"Se loggea con google", Toast.LENGTH_SHORT).show()
-
+                irMenuPrincipal(account.email.toString(), account.displayName.toString())
             }
             else {
                 Toast.makeText(this,it.exception.toString(), Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun irMenuPrincipal(email:String, nombre:String = "Usuario"){
+        Log.e(TAG,"Valores: ${email}, ${nombre}")
+        val homeIntent = Intent(this, MenuPrincipal::class.java).apply {
+            putExtra("email",email)
+            putExtra("nombre",nombre)
+        }
+        startActivity(homeIntent)
     }
 }

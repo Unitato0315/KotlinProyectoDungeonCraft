@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DungeonCrafter</string>
+    <string name="email">EMAIL</string>
+    <string name="password">PASSWORD</string>
+    <string name="iniciosesion">LOG IN</string>
+    <string name="registro">SIGN UP</string>
+    <string name="google">LOG IN WITH GOOGLE</string>
+    <string name="cerrar">LOG OUT</string>
+    <string name="idioma">LANGUAJE</string>
+    <string name="configuracion">CONFIG</string>
+    <string name="opciones">Options</string>
+    <string name="jugar">PLAY</string>
+    <string name="coleccion">COLLECTION</string>
+    <string name="sobres">OPEN CARD PACK</string>
+</resources>
