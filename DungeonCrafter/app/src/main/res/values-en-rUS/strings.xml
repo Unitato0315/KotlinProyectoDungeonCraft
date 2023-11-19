@@ -13,4 +13,19 @@
     <string name="jugar">PLAY</string>
     <string name="coleccion">COLLECTION</string>
     <string name="sobres">OPEN CARD PACK</string>
+    <string name="menuOpciones">Option Menu</string>
+    <string-array name="idiomas">
+        <item>SPANISH</item>
+        <item>ENGLISH</item>
+    </string-array>
+    <string name="creado">User has been created</string>
+    <string name="errorCreacion">The user already exists</string>
+    <string name="errorGenerico">An error has occurred</string>
+    <string name="inicio">You are successfully logged in</string>
+    <string name="errorInicio">User not found</string>
+    <string name="datosVacios">Not all fields are filled in</string>
+    <string name="menuRegistro">Register Menu</string>
+    <string name="usuario">USER</string>
+    <string name="confirmar">CONFIRM PASSWORD</string>
+    <string name="errorContrasenas">Passwords do not match</string>
 </resources>

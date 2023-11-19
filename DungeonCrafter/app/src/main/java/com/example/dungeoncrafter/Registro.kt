@@ -1,5 +1,6 @@
 package com.example.dungeoncrafter
 
+import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,45 +11,63 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.dungeoncrafter.databinding.ActivityMainBinding
-import com.example.dungeoncrafter.databinding.ActivityMenuPrincipalBinding
-import com.google.android.gms.auth.api.identity.Identity
+import com.example.dungeoncrafter.databinding.ActivityRegistroBinding
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import java.util.Locale
 
-class MenuPrincipal : AppCompatActivity() {
-    lateinit var binding: ActivityMenuPrincipalBinding
-    val TAG = "JVVM"
+class Registro : AppCompatActivity() {
+    private lateinit var binding: ActivityRegistroBinding
     private lateinit var firebaseauth : FirebaseAuth
+    private lateinit var googleSignInClient: GoogleSignInClient
+
+    val TAG = "JVVM"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMenuPrincipalBinding.inflate(layoutInflater)
+        binding = ActivityRegistroBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.toolbar3)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         firebaseauth = FirebaseAuth.getInstance()
-        setSupportActionBar(binding.toolbar2)
-        //supportActionBar?.setDisplayHomeAsUpEnabled(true) //BOTON DE RETROCEDER
+        binding.toolbar3.setNavigationOnClickListener {
+            finish()
+        }
+
+        binding.btnRegistr.setOnClickListener {
+            if (binding.edEmailReg.text?.isNotEmpty() == true && binding.edPassReg.text?.isNotEmpty() == true ){
+                Log.d(TAG,binding.edPassReg.text.toString())
+                Log.d(TAG,binding.edConfReg.text.toString())
+                if (binding.edPassReg.text.toString() == binding.edConfReg.text.toString()){
+                    firebaseauth.createUserWithEmailAndPassword(binding.edEmailReg.text.toString(),binding.edPassReg.text.toString()).addOnCompleteListener {
+                        if (it.isSuccessful){
+                            irMenuPrincipal(it.result?.user?.email?:"")
+                            Toast.makeText(this, R.string.creado, Toast.LENGTH_SHORT).show()
+
+                        } else {
+                            Toast.makeText(this, R.string.errorCreacion, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }else{
+                    Toast.makeText(this, R.string.errorContrasenas, Toast.LENGTH_SHORT).show()
+                }
+            }else{
+                Toast.makeText(this, R.string.datosVacios, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.menu2, menu)
+        inflater.inflate(R.menu.menu, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.option_1 -> {
-                Log.e(TAG, firebaseauth.currentUser.toString())
-                firebaseauth.signOut()
-
-                val signInClient = Identity.getSignInClient(this)
-                signInClient.signOut()
-                Log.e(TAG,"Cerrada sesión completamente")
-                finish()
-            }
-            R.id.option_2 -> {
                 var selectec: Int = 0
                 val builder = AlertDialog.Builder(this)
                 val inflater = layoutInflater
@@ -119,5 +138,17 @@ class MenuPrincipal : AppCompatActivity() {
         // Puedes reiniciar la actividad actual para aplicar los cambios
         recreate()
     }
+    private fun irMenuPrincipal(email:String, nombre:String = "Usuario"){
+        Log.e(TAG,"Valores: ${email}, ${nombre}")
+        val homeIntent = Intent(this, MenuPrincipal::class.java).apply {
+            putExtra("email",email)
+            putExtra("nombre",nombre)
+        }
+        startActivity(homeIntent)
+    }
 
+    override fun onRestart() {
+        super.onRestart()
+        finish()
+    }
 }

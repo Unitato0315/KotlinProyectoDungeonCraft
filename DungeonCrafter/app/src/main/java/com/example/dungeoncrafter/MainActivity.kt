@@ -2,13 +2,20 @@ package com.example.dungeoncrafter
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import com.example.dungeoncrafter.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -17,11 +24,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.GoogleAuthProvider
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     private lateinit var firebaseauth : FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+
     val TAG = "JVVM"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,33 +44,19 @@ class MainActivity : AppCompatActivity() {
                 firebaseauth.signInWithEmailAndPassword(binding.edEmail.text.toString(),binding.edPass.text.toString()).addOnCompleteListener {
                     if (it.isSuccessful){
                         irMenuPrincipal(it.result?.user?.email?:"")
-                        Toast.makeText(this, "Conexión correcta", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, R.string.inicio, Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(this, "Conexión erronea", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, R.string.errorInicio, Toast.LENGTH_SHORT).show()
                     }
-                }.addOnFailureListener{
-                    Toast.makeText(this, "Conexión no establecida", Toast.LENGTH_SHORT).show()
                 }
             }else{
-                Toast.makeText(this, "Vacio", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.datosVacios, Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.btnRegistr.setOnClickListener {
-            if (binding.edEmail.text?.isNotEmpty() == true && binding.edPass.text?.isNotEmpty() == true ){
-                firebaseauth.createUserWithEmailAndPassword(binding.edEmail.text.toString(),binding.edPass.text.toString()).addOnCompleteListener {
-                    if (it.isSuccessful){
-                        irMenuPrincipal(it.result?.user?.email?:"")
-                        Toast.makeText(this, "Conexión correcta", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this, "Conexión erronea", Toast.LENGTH_SHORT).show()
-                    }
-                }.addOnFailureListener{
-                    Toast.makeText(this, "Conexión no establecida", Toast.LENGTH_SHORT).show()
-                }
-            }else{
-                Toast.makeText(this, "Vacio", Toast.LENGTH_SHORT).show()
-            }
+            val registerIntent = Intent(this, Registro::class.java)
+            startActivity(registerIntent)
         }
 
         firebaseauth.signOut()
@@ -113,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         //pido un token, y con ese token, si todo va bien obtenga la info.
         firebaseauth.signInWithCredential(credential).addOnCompleteListener {
             if (it.isSuccessful){
-                Toast.makeText(this,"Se loggea con google", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,R.string.inicio, Toast.LENGTH_SHORT).show()
                 irMenuPrincipal(account.email.toString(), account.displayName.toString())
             }
             else {
@@ -129,5 +124,79 @@ class MainActivity : AppCompatActivity() {
             putExtra("nombre",nombre)
         }
         startActivity(homeIntent)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.option_1 -> {
+                var selectec: Int = 0
+                val builder = AlertDialog.Builder(this)
+                val inflater = layoutInflater
+                builder.setTitle(R.string.menuOpciones)
+                val dialogLayout = inflater.inflate(R.layout.dialog_option, null)
+                val languageSpinner: Spinner = dialogLayout.findViewById(R.id.spinner2)
+
+                val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,resources.getStringArray(R.array.idiomas))
+
+                languageSpinner.adapter = adapter
+
+                languageSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        selectec = position
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        TODO("Not yet implemented")
+                    }
+                }
+
+                val currentLocale: Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    resources.configuration.locales[0]
+                } else {
+                    @Suppress("DEPRECATION")
+                    resources.configuration.locale
+                }
+
+                val languageCode = currentLocale.language
+
+                when(languageCode.toString()){
+                    "en"->{
+                        languageSpinner.setSelection(1)
+                    }
+                    "es"->{
+                        languageSpinner.setSelection(0)
+                    }
+                }
+                Log.d(TAG,languageCode.toString())
+
+                builder.setView(dialogLayout)
+                builder.setPositiveButton("Guardar cambios") { _, i -> cambiarIdioma(selectec)}
+                builder.show()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+    fun cambiarIdioma(pos: Int) {
+        var languaje :String = ""
+        when(pos){
+            0-> languaje = "es"
+            1-> languaje = "en"
+        }
+
+        val locale = Locale(languaje)
+        Locale.setDefault(locale)
+
+        val configuration = android.content.res.Configuration()
+        configuration.setLocale(locale)
+
+        resources.updateConfiguration(configuration, resources.displayMetrics)
+
+        // Puedes reiniciar la actividad actual para aplicar los cambios
+        recreate()
     }
 }

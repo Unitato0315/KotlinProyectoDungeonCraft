@@ -13,4 +13,19 @@
     <string name="jugar">JUGAR</string>
     <string name="coleccion">COLECCION</string>
     <string name="sobres">ABRIR SOBRES</string>
+    <string name="menuOpciones">Menu Opciones</string>
+    <string-array name="idiomas">
+        <item>ESPAÑOL</item>
+        <item>INGLES</item>
+    </string-array>
+    <string name="creado">Se ha creado el usuario</string>
+    <string name="errorCreacion">El usuario ya existe</string>
+    <string name="errorGenerico">Se ha producido un error</string>
+    <string name="inicio">Se ha iniciado sesion correctamente</string>
+    <string name="errorInicio">No se ha encontrado el usuario</string>
+    <string name="datosVacios">No se han rellenado todos los campos</string>
+    <string name="menuRegistro">Menu de Registro</string>
+    <string name="usuario">USUARIO</string>
+    <string name="confirmar">CONFIRMAR CONTRASEÑA</string>
+    <string name="errorContrasenas">Las contraseñas no coinciden</string>
 </resources>
