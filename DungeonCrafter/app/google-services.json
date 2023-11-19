@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "221295858051",
+    "project_id": "dungeoncraft-42c25",
+    "storage_bucket": "dungeoncraft-42c25.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221295858051:android:3452557f86af5fb86fe6b6",
+        "android_client_info": {
+          "package_name": "com.example.dungeoncrafter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCU6AL4Xoi_OUhaCCwCqIPUrLBufzlMJ5Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
