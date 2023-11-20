@@ -28,4 +28,5 @@
     <string name="usuario">USUARIO</string>
     <string name="confirmar">CONFIRMAR CONTRASEÑA</string>
     <string name="errorContrasenas">Las contraseñas no coinciden</string>
+    <string name="guardar">Guardar cambios</string>
 </resources>

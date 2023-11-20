@@ -18,13 +18,15 @@ import com.example.dungeoncrafter.databinding.ActivityMainBinding
 import com.example.dungeoncrafter.databinding.ActivityRegistroBinding
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import java.util.Locale
 
 class Registro : AppCompatActivity() {
     private lateinit var binding: ActivityRegistroBinding
     private lateinit var firebaseauth : FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
-
+    val db = Firebase.firestore
     val TAG = "JVVM"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +38,6 @@ class Registro : AppCompatActivity() {
         binding.toolbar3.setNavigationOnClickListener {
             finish()
         }
-
         binding.btnRegistr.setOnClickListener {
             if (binding.edEmailReg.text?.isNotEmpty() == true && binding.edPassReg.text?.isNotEmpty() == true ){
                 Log.d(TAG,binding.edPassReg.text.toString())
@@ -44,6 +45,7 @@ class Registro : AppCompatActivity() {
                 if (binding.edPassReg.text.toString() == binding.edConfReg.text.toString()){
                     firebaseauth.createUserWithEmailAndPassword(binding.edEmailReg.text.toString(),binding.edPassReg.text.toString()).addOnCompleteListener {
                         if (it.isSuccessful){
+                            guardarUsuario()
                             irMenuPrincipal(it.result?.user?.email?:"")
                             Toast.makeText(this, R.string.creado, Toast.LENGTH_SHORT).show()
 
@@ -63,6 +65,23 @@ class Registro : AppCompatActivity() {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.menu, menu)
         return true
+    }
+
+    fun guardarUsuario(){
+        var user = hashMapOf(
+            "usuario" to binding.edUserReg.text.toString(),
+            "email" to binding.edEmailReg.text.toString(),
+            "roles" to 0
+        )
+
+        // Si no existe el documento lo crea, si existe lo remplaza.
+        db.collection("users")
+            .document(user.get("email").toString()) //Será la clave del documento.
+            .set(user).addOnSuccessListener {
+                Toast.makeText(this, "Almacenado",Toast.LENGTH_SHORT).show()
+            }.addOnFailureListener{
+                Toast.makeText(this, "Ha ocurrido un error",Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -114,7 +133,7 @@ class Registro : AppCompatActivity() {
                 Log.d(TAG,languageCode.toString())
 
                 builder.setView(dialogLayout)
-                builder.setPositiveButton("Guardar cambios") { _, i -> cambiarIdioma(selectec)}
+                builder.setPositiveButton(R.string.guardar) { _, i -> cambiarIdioma(selectec)}
                 builder.show()
             }
         }
@@ -151,4 +170,6 @@ class Registro : AppCompatActivity() {
         super.onRestart()
         finish()
     }
+
+
 }

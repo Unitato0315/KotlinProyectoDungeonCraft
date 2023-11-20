@@ -24,13 +24,22 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var firebaseauth : FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
-
+    var db =Firebase.firestore
     val TAG = "JVVM"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,6 +117,7 @@ class MainActivity : AppCompatActivity() {
         //pido un token, y con ese token, si todo va bien obtenga la info.
         firebaseauth.signInWithCredential(credential).addOnCompleteListener {
             if (it.isSuccessful){
+                guardarUsuario(account.email.toString(), account.displayName.toString())
                 Toast.makeText(this,R.string.inicio, Toast.LENGTH_SHORT).show()
                 irMenuPrincipal(account.email.toString(), account.displayName.toString())
             }
@@ -172,10 +182,9 @@ class MainActivity : AppCompatActivity() {
                         languageSpinner.setSelection(0)
                     }
                 }
-                Log.d(TAG,languageCode.toString())
 
                 builder.setView(dialogLayout)
-                builder.setPositiveButton("Guardar cambios") { _, i -> cambiarIdioma(selectec)}
+                builder.setPositiveButton(R.string.guardar) { _, i -> cambiarIdioma(selectec)}
                 builder.show()
             }
         }
@@ -197,6 +206,37 @@ class MainActivity : AppCompatActivity() {
         resources.updateConfiguration(configuration, resources.displayMetrics)
 
         // Puedes reiniciar la actividad actual para aplicar los cambios
+        recreate()
+    }
+    fun guardarUsuario(email: String, user: String) {
+        var existe: Boolean = false
+        db.collection("users")
+            .document(email)
+            .get().addOnSuccessListener { document ->
+                existe = document != null
+            }
+        if (existe){
+            var user = hashMapOf(
+                "usuario" to user,
+                "email" to email,
+                "roles" to 0
+            )
+
+
+            // Si no existe el documento lo crea, si existe lo remplaza.
+            db.collection("users")
+                .document(user["email"].toString()) //Será la clave del documento.
+                .set(user).addOnSuccessListener {
+                    Toast.makeText(this, "Almacenado",Toast.LENGTH_SHORT).show()
+                }.addOnFailureListener{
+                    Toast.makeText(this, "Ha ocurrido un error",Toast.LENGTH_SHORT).show()
+                }
+        }else{
+            Toast.makeText(this, "Ya esta registrado",Toast.LENGTH_SHORT).show()
+        }
+    }
+    override fun onRestart() {
+        super.onRestart()
         recreate()
     }
 }

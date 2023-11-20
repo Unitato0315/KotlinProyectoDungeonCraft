@@ -95,7 +95,7 @@ class MenuPrincipal : AppCompatActivity() {
                 Log.d(TAG,languageCode.toString())
 
                 builder.setView(dialogLayout)
-                builder.setPositiveButton("Guardar cambios") { _, i -> cambiarIdioma(selectec)}
+                builder.setPositiveButton(R.string.guardar) { _, i -> cambiarIdioma(selectec)}
                 builder.show()
             }
         }
