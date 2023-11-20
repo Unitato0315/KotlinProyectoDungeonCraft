@@ -71,7 +71,8 @@ class Registro : AppCompatActivity() {
         var user = hashMapOf(
             "usuario" to binding.edUserReg.text.toString(),
             "email" to binding.edEmailReg.text.toString(),
-            "roles" to 0
+            "roles" to 0,
+            "Monedas" to 0
         )
 
         // Si no existe el documento lo crea, si existe lo remplaza.

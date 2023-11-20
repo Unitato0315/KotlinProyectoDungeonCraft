@@ -219,7 +219,8 @@ class MainActivity : AppCompatActivity() {
             var user = hashMapOf(
                 "usuario" to user,
                 "email" to email,
-                "roles" to 0
+                "roles" to 1,
+                "Monedas" to 0
             )
 
 
