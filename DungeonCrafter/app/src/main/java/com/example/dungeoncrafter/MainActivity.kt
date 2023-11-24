@@ -1,9 +1,8 @@
 package com.example.dungeoncrafter
 
-import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -16,17 +15,15 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.example.dungeoncrafter.databinding.ActivityMainBinding
-import com.google.firebase.auth.FirebaseAuth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
@@ -96,7 +93,7 @@ class MainActivity : AppCompatActivity() {
     }
     private val launcherVentanaGoogle =  registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
         //si la ventana va bien, se accede a las propiedades que trae la propia ventana q llamamos y recogemos en result.
-        if (result.resultCode == Activity.RESULT_OK){
+        if (result.resultCode == RESULT_OK){
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             manejarResultados(task)
         }
@@ -200,7 +197,7 @@ class MainActivity : AppCompatActivity() {
         val locale = Locale(languaje)
         Locale.setDefault(locale)
 
-        val configuration = android.content.res.Configuration()
+        val configuration = Configuration()
         configuration.setLocale(locale)
 
         resources.updateConfiguration(configuration, resources.displayMetrics)
@@ -209,31 +206,47 @@ class MainActivity : AppCompatActivity() {
         recreate()
     }
     fun guardarUsuario(email: String, user: String) {
-        var existe: Boolean = false
-        db.collection("users")
-            .document(email)
-            .get().addOnSuccessListener { document ->
-                existe = document != null
-            }
-        if (existe){
-            var user = hashMapOf(
-                "usuario" to user,
-                "email" to email,
-                "roles" to 1,
-                "Monedas" to 0
-            )
+        var al = ArrayList<String>()
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val querySnapshot = db.collection("users")
+                    .whereEqualTo("email",email)
+                    .get()
+                    .await()
 
+                val results = mutableListOf<String>()
 
-            // Si no existe el documento lo crea, si existe lo remplaza.
-            db.collection("users")
-                .document(user["email"].toString()) //Será la clave del documento.
-                .set(user).addOnSuccessListener {
-                    Toast.makeText(this, "Almacenado",Toast.LENGTH_SHORT).show()
-                }.addOnFailureListener{
-                    Toast.makeText(this, "Ha ocurrido un error",Toast.LENGTH_SHORT).show()
+                for (document in querySnapshot.documents) {
+                    Log.d(TAG, "${document.id} => ${document.data}")
+                    al.add(document.data.toString())
                 }
-        }else{
-            Toast.makeText(this, "Ya esta registrado",Toast.LENGTH_SHORT).show()
+
+                // Realiza acciones en el hilo principal
+                launch(Dispatchers.Main) {
+                    // Procesa los resultados aquí
+                    if (al.size == 0){
+                        var user = hashMapOf(
+                            "usuario" to user,
+                            "email" to email,
+                            "roles" to 1,
+                            "Monedas" to 0
+                        )
+
+
+                        // Si no existe el documento lo crea, si existe lo remplaza.
+                        db.collection("users")
+                            .document(user["email"].toString())
+                            .set(user).addOnSuccessListener {
+                                Log.d(TAG, "crea")
+                            }
+                    }else{
+                        Log.d(TAG, "No lo crea")
+                    }
+                }
+            } catch (e: Exception) {
+                // Maneja errores aquí
+                e.printStackTrace()
+            }
         }
     }
     override fun onRestart() {

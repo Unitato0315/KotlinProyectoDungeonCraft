@@ -1,7 +1,9 @@
 package com.example.dungeoncrafter
 
+import Modelo.Almacen
+import Modelo.Carta
+import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -10,11 +12,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import android.widget.Spinner
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.example.dungeoncrafter.databinding.ActivityMainBinding
+import androidx.appcompat.app.AppCompatActivity
 import com.example.dungeoncrafter.databinding.ActivityMenuPrincipalBinding
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.FirebaseAuth
@@ -30,6 +30,18 @@ class MenuPrincipal : AppCompatActivity() {
         setContentView(binding.root)
         firebaseauth = FirebaseAuth.getInstance()
         setSupportActionBar(binding.toolbar2)
+
+        Almacen.Cartas = ArrayList()
+        Almacen.Cartas.add(Carta("Arthas", "arthas","relic_sacer", "boss_icon","Prueba de descripcion "))
+        Almacen.Cartas.add(Carta("Khorne", "khorne","relic_sacer", "boss_icon","Prueba de descripcion "))
+        Almacen.Cartas.add(Carta("Morko", "morko","relic_sacer", "boss_icon","Prueba de descripcion "))
+        Almacen.Cartas.add(Carta("Nurgle", "nurgle","relic_sacer", "boss_icon","Prueba de descripcion "))
+        Almacen.Cartas.add(Carta("Sargeras", "sargeras","relic_sacer", "boss_icon","Prueba de descripcion "))
+
+        binding.button3.setOnClickListener {
+            val coleccionIntent = Intent(this, Coleccion::class.java)
+            startActivity(coleccionIntent)
+        }
         //supportActionBar?.setDisplayHomeAsUpEnabled(true) //BOTON DE RETROCEDER
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
