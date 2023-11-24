@@ -38,7 +38,7 @@ class MenuPrincipal : AppCompatActivity() {
         Almacen.Cartas.add(Carta("Nurgle", "nurgle","relic_sacer", "boss_icon","Prueba de descripcion "))
         Almacen.Cartas.add(Carta("Sargeras", "sargeras","relic_sacer", "boss_icon","Prueba de descripcion "))
 
-        binding.button3.setOnClickListener {
+        binding.btnColeccion.setOnClickListener {
             val coleccionIntent = Intent(this, Coleccion::class.java)
             startActivity(coleccionIntent)
         }
@@ -132,4 +132,10 @@ class MenuPrincipal : AppCompatActivity() {
         recreate()
     }
 
+    override fun onRestart() {
+        super.onRestart()
+        if (firebaseauth.currentUser.toString() == "null"){
+            finish()
+        }
+    }
 }

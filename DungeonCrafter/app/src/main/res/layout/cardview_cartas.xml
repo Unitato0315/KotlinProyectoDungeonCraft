@@ -50,6 +50,7 @@
             android:layout_width="150dp"
             android:layout_height="69dp"
             android:ems="10"
+            android:enabled="false"
             android:gravity="start|top"
             android:inputType="textMultiLine"
             android:text="temporal"
