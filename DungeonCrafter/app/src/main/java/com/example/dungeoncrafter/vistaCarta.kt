@@ -1,9 +1,7 @@
 package com.example.dungeoncrafter
 
-import Adaptadores.AdaptadorCartas
-import Modelo.Almacen
-import android.annotation.SuppressLint
-import android.content.Context
+import Modelo.Carta
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -16,46 +14,31 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.dungeoncrafter.databinding.ActivityColeccionBinding
+import com.example.dungeoncrafter.databinding.ActivityVistaCartaBinding
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.FirebaseAuth
 import java.util.Locale
 
-
-class Coleccion : AppCompatActivity() {
-    lateinit var binding: ActivityColeccionBinding
-    lateinit var miRecyclerView : RecyclerView
-    val TAG = "JVVM"
+class vistaCarta : AppCompatActivity() {
+    lateinit var binding: ActivityVistaCartaBinding
     private lateinit var firebaseauth : FirebaseAuth
-
-    companion object {
-        @SuppressLint("StaticFieldLeak")
-        lateinit var contextoPrincipal: Context
-    }
+    val TAG = "JVVM"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityColeccionBinding.inflate(layoutInflater)
+        binding = ActivityVistaCartaBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.tbCollection)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) //BOTON DE RETROCEDER
-        binding.tbCollection.setNavigationOnClickListener {
-            finish()
-        }
+        var carta = intent.getSerializableExtra("obj") as Carta
+        setSupportActionBar(binding.tbCarta)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         firebaseauth = FirebaseAuth.getInstance()
 
-        miRecyclerView = binding.recycledCartas
-        miRecyclerView.setHasFixedSize(true)
-        miRecyclerView.layoutManager = GridLayoutManager(this, 2)
+        binding.tbCarta.setNavigationOnClickListener {
+            finish()
+        }
 
-        var miAdapter = AdaptadorCartas(Almacen.Cartas,this)
+        dibujarCarta(carta)
 
-        miRecyclerView.adapter = miAdapter
-
-        contextoPrincipal = this
     }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.menu2, menu)
@@ -117,7 +100,7 @@ class Coleccion : AppCompatActivity() {
                         languageSpinner.setSelection(0)
                     }
                 }
-                Log.d(TAG,languageCode.toString())
+
 
                 builder.setView(dialogLayout)
                 builder.setPositiveButton(R.string.guardar) { _, i -> cambiarIdioma(selectec)}
@@ -126,6 +109,7 @@ class Coleccion : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
     fun cambiarIdioma(pos: Int) {
         var languaje :String = ""
         when(pos){
@@ -145,12 +129,26 @@ class Coleccion : AppCompatActivity() {
         recreate()
     }
 
-    override fun onRestart() {
-        super.onRestart()
-        if (firebaseauth.currentUser.toString() == "null"){
-            finish()
-        }
-        recreate()
+    fun dibujarCarta(carta: Carta){
+        binding.tvNombre.text = carta.nombre
+
+        val descRecur = this.resources.getStringArray(this.resources.getIdentifier("descripcion","array",this.packageName))
+        binding.edtmlDescripcion.setText(descRecur[carta.descripcion])
+        val uri1 = "@drawable/"+carta.imagenPersonaje
+        val uri2 = "@drawable/"+carta.imagenRelic
+        val uri3 = "@drawable/"+carta.imagenTipo
+        val imageResource: Int =
+            this.resources.getIdentifier(uri1, null, this.packageName)
+        var res: Drawable = this.resources.getDrawable(imageResource)
+        binding.imgPersonaje.setImageDrawable(res)
+        val imageResource2: Int =
+            this.resources.getIdentifier(uri2, null, this.packageName)
+        var res2: Drawable = this.resources.getDrawable(imageResource2)
+        binding.imgRelic.setImageDrawable(res2)
+        val imageResource3: Int =
+            this.resources.getIdentifier(uri3, null, this.packageName)
+        var res3: Drawable = this.resources.getDrawable(imageResource3)
+        binding.imgTipo.setImageDrawable(res3)
     }
 
 }

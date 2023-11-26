@@ -6,4 +6,4 @@ data class Carta(var nombre: String,
                  var imagenPersonaje: String,
                  var imagenRelic: String,
                  var imagenTipo: String,
-                 var descripcion: String): Serializable
+                 var descripcion: Int): Serializable

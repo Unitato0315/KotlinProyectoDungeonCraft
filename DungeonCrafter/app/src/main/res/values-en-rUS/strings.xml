@@ -4,7 +4,7 @@
     <string name="email">EMAIL</string>
     <string name="password">PASSWORD</string>
     <string name="iniciosesion">LOG IN</string>
-    <string name="registro">SIGN UP</string>
+    <string name="registro">Don\'t have an account yet? Register here</string>
     <string name="google">LOG IN WITH GOOGLE</string>
     <string name="cerrar">LOG OUT</string>
     <string name="idioma">LANGUAJE</string>
@@ -29,4 +29,25 @@
     <string name="confirmar">CONFIRM PASSWORD</string>
     <string name="errorContrasenas">Passwords do not match</string>
     <string name="guardar">Save changes</string>
+    <string-array name="descripcion">
+        <item>Desc Arthas ing</item>
+        <item>Desc Norgle ing</item>
+        <item>Desc Korne  ing</item>
+        <item>Desc alamuerte  ing</item>
+        <item>Desc Gorko  ing</item>
+        <item>Desc Sargeras  ing</item>
+        <item>Desc Slaanesh  ing</item>
+        <item>Desc Morko  ing</item>
+    </string-array>
+    <string name="registro2">Sign up</string>
+    <string name="genero">GENRE</string>
+    <string name="masculino">Male</string>
+    <string name="femenino">Female</string>
+    <string name="otro">Other</string>
+    <string name="condiciones">I accept the terms and conditions</string>
+    <string name="errorCondiciones">Terms and conditions not accepted</string>
+    <string name="modificarUser">EDIT USER</string>
+    <string name="modificar">Edit</string>
+    <string name="borrar">Delete</string>
+    <string name="cambiarContrasena">Want to change the password?</string>
 </resources>

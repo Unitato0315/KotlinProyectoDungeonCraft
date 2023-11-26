@@ -4,10 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/fondo_cuarta_version"
     tools:context=".MenuPrincipal">
 
     <Button
         android:id="@+id/btnSobres"
+        style="@style/Widget.Material3.Button.ElevatedButton"
         android:layout_width="293dp"
         android:layout_height="80dp"
         android:text="@string/sobres"
@@ -15,21 +17,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499" />
+        app:layout_constraintVertical_bias="0.414" />
 
     <Button
         android:id="@+id/btnJugar"
+        style="@style/Widget.Material3.Button.ElevatedButton"
         android:layout_width="293dp"
         android:layout_height="80dp"
         android:text="@string/jugar"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.25" />
+        app:layout_constraintVertical_bias="0.231" />
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar2"
+        android:id="@+id/tbMenuPrincipal"
         android:layout_width="match_parent"
         android:layout_height="66dp"
         android:background="?attr/colorPrimary"
@@ -44,6 +48,7 @@
 
     <Button
         android:id="@+id/btnColeccion"
+        style="@style/Widget.Material3.Button.ElevatedButton"
         android:layout_width="293dp"
         android:layout_height="80dp"
         android:text="@string/coleccion"
@@ -51,5 +56,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.725" />
+        app:layout_constraintVertical_bias="0.602" />
+
+    <Button
+        android:id="@+id/btnModificarPrin"
+        style="@style/Widget.Material3.Button.ElevatedButton"
+        android:layout_width="293dp"
+        android:layout_height="80dp"
+        android:text="@string/modificarUser"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.801" />
 </androidx.constraintlayout.widget.ConstraintLayout>

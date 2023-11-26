@@ -1,9 +1,6 @@
 package com.example.dungeoncrafter
 
-import Adaptadores.AdaptadorCartas
 import Modelo.Almacen
-import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -16,52 +13,56 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.dungeoncrafter.databinding.ActivityColeccionBinding
+import com.example.dungeoncrafter.databinding.ActivityModificarUsuarioBinding
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import java.util.Locale
 
-
-class Coleccion : AppCompatActivity() {
-    lateinit var binding: ActivityColeccionBinding
-    lateinit var miRecyclerView : RecyclerView
+class ModificarUsuario : AppCompatActivity() {
+    lateinit var binding: ActivityModificarUsuarioBinding
     val TAG = "JVVM"
     private lateinit var firebaseauth : FirebaseAuth
-
-    companion object {
-        @SuppressLint("StaticFieldLeak")
-        lateinit var contextoPrincipal: Context
-    }
+    val db = Firebase.firestore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityColeccionBinding.inflate(layoutInflater)
+        binding = ActivityModificarUsuarioBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.tbCollection)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) //BOTON DE RETROCEDER
-        binding.tbCollection.setNavigationOnClickListener {
-            finish()
-        }
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         firebaseauth = FirebaseAuth.getInstance()
 
-        miRecyclerView = binding.recycledCartas
-        miRecyclerView.setHasFixedSize(true)
-        miRecyclerView.layoutManager = GridLayoutManager(this, 2)
+        binding.toolbar.setNavigationOnClickListener {
+            finish()
+        }
 
-        var miAdapter = AdaptadorCartas(Almacen.Cartas,this)
+        if (Almacen.User.rol == 1){
+            binding.cbContrasena.visibility = View.INVISIBLE
+        }
 
-        miRecyclerView.adapter = miAdapter
+        binding.cbContrasena.setOnClickListener {
+            if(binding.cbContrasena.isChecked){
+                binding.tfPassReg.visibility = View.VISIBLE
+                binding.tfConfReg.visibility = View.VISIBLE
+                binding.textView7.visibility = View.VISIBLE
+                binding.textView8.visibility = View.VISIBLE
+            }else{
+                binding.tfPassReg.visibility = View.INVISIBLE
+                binding.tfConfReg.visibility = View.INVISIBLE
+                binding.textView7.visibility = View.INVISIBLE
+                binding.textView8.visibility = View.INVISIBLE
+            }
+        }
 
-        contextoPrincipal = this
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.menu2, menu)
+
         return true
     }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.option_1 -> {
@@ -140,17 +141,6 @@ class Coleccion : AppCompatActivity() {
         configuration.setLocale(locale)
 
         resources.updateConfiguration(configuration, resources.displayMetrics)
-
-        // Puedes reiniciar la actividad actual para aplicar los cambios
         recreate()
     }
-
-    override fun onRestart() {
-        super.onRestart()
-        if (firebaseauth.currentUser.toString() == "null"){
-            finish()
-        }
-        recreate()
-    }
-
 }

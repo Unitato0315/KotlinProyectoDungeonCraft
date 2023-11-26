@@ -1,92 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cardView"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@android:color/transparent"
-    app:cardBackgroundColor="@android:color/transparent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fondo_cuarta_version"
+    tools:context=".vistaCarta">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/tbCarta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/carta"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/transparent">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/textView9"
-            android:layout_width="166dp"
-            android:layout_height="122dp"
+            android:layout_width="328dp"
+            android:layout_height="186dp"
             android:background="@color/md_theme_light_onPrimary"
             android:text="TextView"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.428"
+            app:layout_constraintHorizontal_bias="0.516"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.904" />
+            app:layout_constraintVertical_bias="0.869" />
 
         <ImageView
             android:id="@+id/imgPersonaje"
-            android:layout_width="183dp"
-            android:layout_height="162dp"
+            android:layout_width="333dp"
+            android:layout_height="288dp"
             android:background="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.466"
+            app:layout_constraintHorizontal_bias="0.423"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.131"
+            app:layout_constraintVertical_bias="0.208"
             app:srcCompat="@drawable/arthas" />
 
         <ImageView
             android:id="@+id/imgTipo"
-            android:layout_width="31dp"
-            android:layout_height="29dp"
+            android:layout_width="52dp"
+            android:layout_height="55dp"
             android:background="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.11"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.090"
+            app:layout_constraintVertical_bias="0.112"
             tools:srcCompat="@drawable/boss_icon" />
 
         <ImageView
             android:id="@+id/imgRelic"
-            android:layout_width="30dp"
-            android:layout_height="28dp"
+            android:layout_width="54dp"
+            android:layout_height="55dp"
             android:background="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.9"
+            app:layout_constraintHorizontal_bias="0.911"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.09"
+            app:layout_constraintVertical_bias="0.112"
             tools:srcCompat="@drawable/relic_sacer" />
 
         <EditText
             android:id="@+id/edtmlDescripcion"
-            android:layout_width="161dp"
-            android:layout_height="75dp"
+            android:layout_width="291dp"
+            android:layout_height="137dp"
             android:backgroundTint="@color/md_theme_dark_inverseSurface"
             android:ems="10"
             android:enabled="false"
             android:gravity="start|top"
             android:inputType="textMultiLine"
             android:text="temporal"
-            android:textSize="10sp"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.874" />
+            app:layout_constraintVertical_bias="0.851" />
 
         <ImageView
             android:id="@+id/imgMarco"
-            android:layout_width="194dp"
-            android:layout_height="290dp"
+            android:layout_width="359dp"
+            android:layout_height="561dp"
             android:background="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -98,25 +113,20 @@
 
         <TextView
             android:id="@+id/tvNombre"
-            android:layout_width="72dp"
-            android:layout_height="12dp"
+            android:layout_width="134dp"
+            android:layout_height="19dp"
             android:background="@android:color/transparent"
             android:text="Arthar"
             android:textAlignment="center"
-            android:textSize="11sp"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.606" />
-
-        <View
-            android:id="@+id/divider"
-            android:layout_width="150dp"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider"
-            tools:layout_editor_absoluteX="24dp"
-            tools:layout_editor_absoluteY="289dp" />
+            app:layout_constraintVertical_bias="0.601" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/fondo_cuarta_version"
     tools:context=".MainActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/tbLogin"
         android:layout_width="match_parent"
         android:layout_height="66dp"
         android:background="?attr/colorPrimary"
@@ -21,90 +22,93 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/btnGoogle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/google"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.74" />
-
-    <Button
         android:id="@+id/btnInicio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/Widget.Material3.Button.ElevatedButton"
+        android:layout_width="268dp"
+        android:layout_height="48dp"
         android:text="@string/iniciosesion"
+        app:icon="@drawable/user_solid"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.063"
+        app:layout_constraintHorizontal_bias="0.475"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.566" />
+        app:layout_constraintVertical_bias="0.702" />
 
     <Button
-        android:id="@+id/btnRegistr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/registro"
+        android:id="@+id/btnGoogle"
+        style="@style/Widget.Material3.Button.ElevatedButton"
+        android:layout_width="268dp"
+        android:layout_height="48dp"
+        android:text="@string/google"
+        app:icon="@drawable/google"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.926"
+        app:layout_constraintHorizontal_bias="0.489"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.566" />
+        app:layout_constraintVertical_bias="0.795" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnRegistr"
+        style="?attr/borderlessButtonStyle"
+        android:layout_width="344dp"
+        android:layout_height="50dp"
+        android:background="@android:color/transparent"
+        android:text="@string/registro"
+        android:textAlignment="viewStart"
+        android:textColor="@color/cardview_light_background"
+        app:backgroundTint="@color/md_theme_dark_onBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.238"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.889" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/email"
+        android:textColor="@color/cardview_light_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.043"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.154" />
+        app:layout_constraintVertical_bias="0.352" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tfEmail"
-        android:layout_width="351dp"
-        android:layout_height="60dp"
-        android:hint="@string/email"
-        app:endIconMode="clear_text"
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="162dp"
+        android:layout_height="156dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.266"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.21">
-
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintVertical_bias="0.134"
+        app:srcCompat="@mipmap/ic_launcher_app_icon_foreground" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/password"
+        android:textColor="@color/cardview_light_background"
+        android:textColorHint="@color/md_theme_dark_onBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.049"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.303" />
+        app:layout_constraintVertical_bias="0.501" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tfPass"
-        android:layout_width="351dp"
-        android:layout_height="64dp"
+        android:layout_width="355dp"
+        android:layout_height="66dp"
+        android:background="@drawable/rounded"
         android:hint="@string/password"
         app:endIconMode="password_toggle"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -112,7 +116,7 @@
         app:layout_constraintHorizontal_bias="0.266"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.377">
+        app:layout_constraintVertical_bias="0.589">
 
 
         <com.google.android.material.textfield.TextInputEditText
@@ -120,6 +124,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword" />
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tfEmail"
+        android:layout_width="354dp"
+        android:layout_height="67dp"
+        android:background="@drawable/rounded"
+        android:hint="@string/email"
+        app:endIconMode="clear_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.266"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.418">
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
 
     </com.google.android.material.textfield.TextInputLayout>

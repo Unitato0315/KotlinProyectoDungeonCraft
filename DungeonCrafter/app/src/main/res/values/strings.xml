@@ -3,7 +3,7 @@
     <string name="email">EMAIL</string>
     <string name="password">CONTRASEÑA</string>
     <string name="iniciosesion">INICIAR SESSION</string>
-    <string name="registro">REGISTRARSE</string>
+    <string name="registro">Aun no tienes cuenta? Registrate aqui</string>
     <string name="google">INICIAR SESION CON GOOGLE</string>
     <string name="cerrar">CERRAR SESION</string>
     <string name="idioma">IDIOMA</string>
@@ -29,4 +29,25 @@
     <string name="confirmar">CONFIRMAR CONTRASEÑA</string>
     <string name="errorContrasenas">Las contraseñas no coinciden</string>
     <string name="guardar">Guardar cambios</string>
+    <string-array name="descripcion">
+        <item>Desc Arthas</item>
+        <item>Desc Norgle</item>
+        <item>Desc Korne</item>
+        <item>Desc alamuerte</item>
+        <item>Desc Gorko</item>
+        <item>Desc Sargeras</item>
+        <item>Desc Slaanesh</item>
+        <item>Desc Morko</item>
+    </string-array>
+    <string name="registro2">Registrase</string>
+    <string name="genero">GENERO</string>
+    <string name="masculino">Masculino</string>
+    <string name="femenino">Femenino</string>
+    <string name="otro">Otro</string>
+    <string name="condiciones">Acepto los terminos y condiciones</string>
+    <string name="errorCondiciones">No se han aceptados los terminos y condiciones</string>
+    <string name="modificarUser">MODIFICAR USUARIO</string>
+    <string name="modificar">Modificar</string>
+    <string name="borrar">Borrar</string>
+    <string name="cambiarContrasena">Quieres cambiar la contraseña?</string>
 </resources>

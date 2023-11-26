@@ -2,6 +2,9 @@ package com.example.dungeoncrafter
 
 import Modelo.Almacen
 import Modelo.Carta
+import Modelo.Users
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -18,35 +21,40 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.dungeoncrafter.databinding.ActivityMenuPrincipalBinding
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import java.util.Locale
 
 class MenuPrincipal : AppCompatActivity() {
     lateinit var binding: ActivityMenuPrincipalBinding
     val TAG = "JVVM"
     private lateinit var firebaseauth : FirebaseAuth
+    val db = Firebase.firestore
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        lateinit var contextoPrincipal: Context
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMenuPrincipalBinding.inflate(layoutInflater)
         setContentView(binding.root)
         firebaseauth = FirebaseAuth.getInstance()
-        setSupportActionBar(binding.toolbar2)
-
-        Almacen.Cartas = ArrayList()
-        Almacen.Cartas.add(Carta("Arthas", "arthas","relic_sacer", "boss_icon","Prueba de descripcion "))
-        Almacen.Cartas.add(Carta("Khorne", "khorne","relic_sacer", "boss_icon","Prueba de descripcion "))
-        Almacen.Cartas.add(Carta("Morko", "morko","relic_sacer", "boss_icon","Prueba de descripcion "))
-        Almacen.Cartas.add(Carta("Nurgle", "nurgle","relic_sacer", "boss_icon","Prueba de descripcion "))
-        Almacen.Cartas.add(Carta("Sargeras", "sargeras","relic_sacer", "boss_icon","Prueba de descripcion "))
+        setSupportActionBar(binding.tbMenuPrincipal)
 
         binding.btnColeccion.setOnClickListener {
-            val coleccionIntent = Intent(this, Coleccion::class.java)
-            startActivity(coleccionIntent)
+            cargarCartas()
         }
+
+        binding.btnModificarPrin.setOnClickListener {
+            cargarDatosUsuario()
+        }
+        contextoPrincipal = this
         //supportActionBar?.setDisplayHomeAsUpEnabled(true) //BOTON DE RETROCEDER
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.menu2, menu)
+
         return true
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -127,15 +135,71 @@ class MenuPrincipal : AppCompatActivity() {
         configuration.setLocale(locale)
 
         resources.updateConfiguration(configuration, resources.displayMetrics)
-
-        // Puedes reiniciar la actividad actual para aplicar los cambios
         recreate()
+    }
+
+    fun cargarCartas(){
+        Almacen.Cartas = ArrayList()
+        db.collection("cartas")
+            .whereEqualTo("user",intent.getStringExtra("email"))
+            .get()
+            .addOnSuccessListener{
+
+                for (document in it){
+                    val aux = document.get("description").toString()
+                    Almacen.Cartas.add(Carta(document.get("nombre").toString(),document.get("imagen").toString(),document.get("imagenRelic").toString(),document.get("imagenTipo").toString(),aux.toInt()))
+                }
+            }.addOnCompleteListener{
+                moverAColeccion()
+            }
+    }
+
+    fun cargarDatosUsuario(){
+        var users : ArrayList<Users> = ArrayList()
+        db.collection("users")
+            .whereEqualTo("email",intent.getStringExtra("email"))
+            .get()
+            .addOnSuccessListener{
+                for (document in it){
+                    Almacen.User = Users(document.get("usuario").toString(),document.get("roles").toString().toInt(),document.get("email").toString(),document.get("genero").toString().toInt())
+                }
+            }.addOnCompleteListener{
+                    moverAModificar()
+            }
+    }
+
+    fun moverAModificar() {
+        val modificarIntent: Intent = Intent(this, ModificarUsuario::class.java)
+        startActivity(modificarIntent)
+    }
+
+    fun moverAColeccion(){
+        val coleccionIntent = Intent(this, Coleccion::class.java)
+        startActivity(coleccionIntent)
     }
 
     override fun onRestart() {
         super.onRestart()
         if (firebaseauth.currentUser.toString() == "null"){
             finish()
+        }
+        recreate()
+    }
+
+    fun crearCartas(){
+        Almacen.Cartas.forEach{ card ->
+            var carta = hashMapOf(
+                "nombre" to card.nombre,
+                "imagen" to card.imagenPersonaje,
+                "imagenRelic" to card.imagenRelic,
+                "imagenTipo" to card.imagenTipo,
+                "description" to card.descripcion,
+                "user" to intent.getStringExtra("email").toString()
+            )
+            db.collection("cartas")
+                .add(carta).addOnSuccessListener {
+                    Log.e(TAG, "Carta Creada")
+                }
         }
     }
 }

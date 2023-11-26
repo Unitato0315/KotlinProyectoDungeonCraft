@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/option_1"
-        android:title="@string/opciones"
         android:icon="@drawable/gear_solid"
-        app:showAsAction="ifRoom"/>
+        android:iconTint="@color/md_theme_light_inverseOnSurface"
+        android:title="@string/opciones"
+        app:showAsAction="ifRoom" />
+
 </menu>

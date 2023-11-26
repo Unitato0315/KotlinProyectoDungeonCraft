@@ -1,23 +1,22 @@
 package Adaptadores
 
-import Modelo.Almacen
 import Modelo.Carta
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dungeoncrafter.Coleccion
 import com.example.dungeoncrafter.R
+import com.example.dungeoncrafter.vistaCarta
 
 class AdaptadorCartas (var cartas : ArrayList<Carta>, var  context: Context) : RecyclerView.Adapter<AdaptadorCartas.ViewHolder>() {
 
@@ -62,8 +61,7 @@ class AdaptadorCartas (var cartas : ArrayList<Carta>, var  context: Context) : R
         val imPersonaje = view.findViewById(R.id.imgPersonaje) as ImageView
         val imRelic = view.findViewById(R.id.imgRelic) as ImageView
         val imTipe = view.findViewById(R.id.imgTipo) as ImageView
-
-        val btnDetalleEspcifico = view.findViewById<Button>(R.id.btnDetalle) as Button
+        val cartaCompleta = view.findViewById(R.id.cardView) as CardView
 
         @SuppressLint("ResourceAsColor")
         fun bind(
@@ -73,86 +71,38 @@ class AdaptadorCartas (var cartas : ArrayList<Carta>, var  context: Context) : R
             miAdaptadorRecycler: AdaptadorCartas
         ) {
             nombrePersonaje.text = carta.nombre
-            descripcion.setText(carta.descripcion)
+
+            val descRecur = context.resources.getStringArray(context.resources.getIdentifier("descripcion","array",context.packageName))
+            descripcion.setText(descRecur[carta.descripcion])
             val uri1 = "@drawable/"+carta.imagenPersonaje
             val uri2 = "@drawable/"+carta.imagenRelic
             val uri3 = "@drawable/"+carta.imagenTipo
             val imageResource: Int =
-                context.getResources().getIdentifier(uri1, null, context.packageName)
+                context.resources.getIdentifier(uri1, null, context.packageName)
             var res: Drawable = context.resources.getDrawable(imageResource)
             imPersonaje.setImageDrawable(res)
             val imageResource2: Int =
-                context.getResources().getIdentifier(uri2, null, context.packageName)
+                context.resources.getIdentifier(uri2, null, context.packageName)
             var res2: Drawable = context.resources.getDrawable(imageResource2)
             imRelic.setImageDrawable(res2)
             val imageResource3: Int =
-                context.getResources().getIdentifier(uri3, null, context.packageName)
+                context.resources.getIdentifier(uri3, null, context.packageName)
             var res3: Drawable = context.resources.getDrawable(imageResource3)
             imTipe.setImageDrawable(res3)
 
-            //Para marcar o desmarcar al seleccionado usamos el siguiente código.
-            //comparo la posición y pinto en el color elegido(blue)
-            //está implementado de dos maneras, uan deprecated y actual.
-            if (pos == AdaptadorCartas.seleccionado) {
-                with(nombrePersonaje) {
-                    this.setTextColor(resources.getColor(R.color.md_theme_dark_onTertiary))
-                }
-                descripcion.setTextColor(R.color.md_theme_dark_onTertiary)
-            } else {
-                with(nombrePersonaje) {
-                    this.setTextColor(resources.getColor(R.color.md_theme_light_shadow))
-                }
-                descripcion.setTextColor(R.color.md_theme_light_shadow)
+
+
+
+            cartaCompleta.setOnClickListener{
+               var inte: Intent = Intent(Coleccion.contextoPrincipal, vistaCarta::class.java)
+               inte.putExtra("obj", carta)
+               ContextCompat.startActivity(Coleccion.contextoPrincipal, inte, null)
             }
 
-//            itemView.setOnLongClickListener(View.OnLongClickListener() {
-//                Log.e("ACSC0","long click")
-//            }
-
-            //Se levanta una escucha para cada item. Si pulsamos el seleccionado pondremos la selección a -1, (deselecciona)
-            // en otro caso será el nuevo sleccionado.
-            itemView.setOnClickListener {
-                if (pos == AdaptadorCartas.seleccionado) {
-                    AdaptadorCartas.seleccionado = -1
-                } else {
-                    AdaptadorCartas.seleccionado = pos
-                    Log.e(
-                        "ACSC0",
-                        "Seleccionado: ${
-                            Almacen.Cartas.get(AdaptadorCartas.seleccionado).toString()
-                        }"
-                    )
-                }
-                //Con la siguiente instrucción forzamos a recargar el viewHolder porque han cambiado los datos. Así pintará al seleccionado.
-
-                miAdaptadorRecycler.notifyDataSetChanged()
-
-//                val intent = Intent(context, MainActivity2::class.java)
-//
-//                context.startActivity(intent)
-
-                Toast.makeText(
-                    context,
-                    "Valor seleccionado " + AdaptadorCartas.seleccionado.toString(),
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            }
-            itemView.setOnLongClickListener(View.OnLongClickListener {
-                Log.e(
-                    "ACSCO",
-                    "Seleccionado con long click: ${Almacen.Cartas.get(pos).toString()}"
-                )
-                Almacen.Cartas.removeAt(pos)
-                miAdaptadorRecycler.notifyDataSetChanged()
-                true //Tenemos que devolver un valor boolean.
-            })
-
-
-            btnDetalleEspcifico.setOnClickListener {
-               // var inte: Intent = Intent(MainActivity.contextoPrincipal, MainActivity2::class.java)
-               // inte.putExtra("obj", pers)
-               //ContextCompat.startActivity(MainActivity.contextoPrincipal, inte, null)
+            descripcion.setOnClickListener {
+                var inte: Intent = Intent(Coleccion.contextoPrincipal, vistaCarta::class.java)
+                inte.putExtra("obj", carta)
+                ContextCompat.startActivity(Coleccion.contextoPrincipal, inte, null)
             }
         }
     }

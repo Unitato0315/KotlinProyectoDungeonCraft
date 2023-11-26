@@ -1,5 +1,7 @@
 package com.example.dungeoncrafter
 
+import Modelo.Almacen
+import Modelo.Carta
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
@@ -36,13 +38,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var firebaseauth : FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+
     var db =Firebase.firestore
     val TAG = "JVVM"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.tbLogin)
         firebaseauth = FirebaseAuth.getInstance()
 
         binding.btnInicio.setOnClickListener {
@@ -86,18 +89,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loginEnGoogle(){
-        //este método es nuestro.
         val signInClient = googleSignInClient.signInIntent
         launcherVentanaGoogle.launch(signInClient)
-        //milauncherVentanaGoogle.launch(signInClient)
     }
+
     private val launcherVentanaGoogle =  registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
-        //si la ventana va bien, se accede a las propiedades que trae la propia ventana q llamamos y recogemos en result.
         if (result.resultCode == RESULT_OK){
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             manejarResultados(task)
         }
     }
+
     private fun manejarResultados(task: Task<GoogleSignInAccount>) {
         if (task.isSuccessful){
             val account : GoogleSignInAccount? = task.result
@@ -214,10 +216,7 @@ class MainActivity : AppCompatActivity() {
                     .get()
                     .await()
 
-                val results = mutableListOf<String>()
-
                 for (document in querySnapshot.documents) {
-                    Log.d(TAG, "${document.id} => ${document.data}")
                     al.add(document.data.toString())
                 }
 
@@ -228,6 +227,7 @@ class MainActivity : AppCompatActivity() {
                         var user = hashMapOf(
                             "usuario" to user,
                             "email" to email,
+                            "genero" to 3,
                             "roles" to 1,
                             "Monedas" to 0
                         )
@@ -239,6 +239,7 @@ class MainActivity : AppCompatActivity() {
                             .set(user).addOnSuccessListener {
                                 Log.d(TAG, "crea")
                             }
+                        crearCartas(email)
                     }else{
                         Log.d(TAG, "No lo crea")
                     }
@@ -248,6 +249,34 @@ class MainActivity : AppCompatActivity() {
                 e.printStackTrace()
             }
         }
+    }
+
+    fun crearCartas(email: String){
+        Almacen.Cartas = ArrayList()
+        Almacen.Cartas.add(Carta("Arthas", "arthas","relic_sacer", "boss_icon",0))
+        Almacen.Cartas.add(Carta("Khorne", "khorne","relic_sacer", "boss_icon",2))
+        Almacen.Cartas.add(Carta("Morko", "morko","relic_sacer", "boss_icon",7))
+        Almacen.Cartas.add(Carta("Nurgle", "nurgle","relic_sacer", "boss_icon",1))
+        Almacen.Cartas.add(Carta("Sargeras", "sargeras","relic_sacer", "boss_icon",5))
+        Almacen.Cartas.add(Carta("Alamuerte", "alamuerte","relic_sacer", "boss_icon",3))
+        Almacen.Cartas.add(Carta("Gorko", "gorko","relic_sacer", "boss_icon",4))
+        Almacen.Cartas.add(Carta("Slaanesh", "slaanesh","relic_sacer", "boss_icon",6))
+
+        Almacen.Cartas.forEach{ card ->
+            var carta = hashMapOf(
+                "nombre" to card.nombre,
+                "imagen" to card.imagenPersonaje,
+                "imagenRelic" to card.imagenRelic,
+                "imagenTipo" to card.imagenTipo,
+                "description" to card.descripcion,
+                "user" to email
+            )
+            db.collection("cartas")
+                .add(carta).addOnSuccessListener {
+                    Log.e(TAG, "Carta Creada")
+                }
+        }
+
     }
     override fun onRestart() {
         super.onRestart()
