@@ -44,7 +44,7 @@ class Coleccion : AppCompatActivity() {
             finish()
         }
         firebaseauth = FirebaseAuth.getInstance()
-
+        // Creamos el recyclerView
         miRecyclerView = binding.recycledCartas
         miRecyclerView.setHasFixedSize(true)
         miRecyclerView.layoutManager = GridLayoutManager(this, 2)

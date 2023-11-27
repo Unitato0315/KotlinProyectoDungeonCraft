@@ -23,6 +23,9 @@ class AdaptadorCartas (var cartas : ArrayList<Carta>, var  context: Context) : R
     companion object {
         var seleccionado: Int = -1
     }
+    /**
+     * Se encarga de darno la posicion del elemento seleccionado
+     * */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = cartas[position]
         holder.bind(item, context, position, this)
@@ -30,7 +33,6 @@ class AdaptadorCartas (var cartas : ArrayList<Carta>, var  context: Context) : R
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val vista = LayoutInflater.from(parent.context).inflate(R.layout.cardview_cartas, parent, false)
         val viewHolder = ViewHolder(vista)
-        // Configurar el OnClickListener para pasar a la segunda ventana.
         viewHolder.itemView.setOnClickListener {
             val intent = Intent(context, Coleccion::class.java)
             context.startActivity(intent)
@@ -41,21 +43,12 @@ class AdaptadorCartas (var cartas : ArrayList<Carta>, var  context: Context) : R
     override fun getItemCount(): Int {
         return cartas.size
     }
-
-
-    //--------------------------------- Clase interna ViewHolder -----------------------------------
     /**
-     * La clase ViewHolder. No es necesaria hacerla dentro del adapter, pero como van tan ligadas
-     * se puede declarar aquí.
-     */
+     * Clase encargada de la vista de cada uno de los elementos del recyclerView
+     * Tambien asignamos lo que realiza al pulsar sobre una de las cartas
+     * */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        //Esto solo se asocia la primera vez que se llama a la clase, en el método onCreate de la clase que contiene a esta.
-        //Por eso no hace falta que hagamos lo que hacíamos en el método getView de los adaptadores para las listsViews.
-        //val nombrePersonaje = view.findViewById(R.id.txtNombre) as TextView
-        //val tipoPersonaje = view.findViewById(R.id.txtTipo) as TextView
-        //val avatar = view.findViewById(R.id.imgImagen) as ImageView
-
-        //Como en el ejemplo general de las listas (ProbandoListas) vemos que se puede inflar cada elemento con una card o con un layout.
+        // Elementos que componen cada carta
         val nombrePersonaje = view.findViewById(R.id.tvNombre) as TextView
         val descripcion = view.findViewById(R.id.edtmlDescripcion) as EditText
         val imPersonaje = view.findViewById(R.id.imgPersonaje) as ImageView

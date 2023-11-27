@@ -137,7 +137,9 @@ class MenuPrincipal : AppCompatActivity() {
         resources.updateConfiguration(configuration, resources.displayMetrics)
         recreate()
     }
-
+    /**
+     * Se encarga de traer todas las cartas del usuario actual
+     * */
     fun cargarCartas(){
         Almacen.Cartas = ArrayList()
         db.collection("cartas")
@@ -153,7 +155,9 @@ class MenuPrincipal : AppCompatActivity() {
                 moverAColeccion()
             }
     }
-
+    /**
+     * Se encarga de traer los datos del usuario actual
+     * */
     fun cargarDatosUsuario(){
         var users : ArrayList<Users> = ArrayList()
         db.collection("users")
@@ -178,28 +182,14 @@ class MenuPrincipal : AppCompatActivity() {
         startActivity(coleccionIntent)
     }
 
+    /**
+     * Comprueba que el usuario no haya cerrado sesion en caso que si finaliza el activity
+     * */
     override fun onRestart() {
         super.onRestart()
         if (firebaseauth.currentUser.toString() == "null"){
             finish()
         }
         recreate()
-    }
-
-    fun crearCartas(){
-        Almacen.Cartas.forEach{ card ->
-            var carta = hashMapOf(
-                "nombre" to card.nombre,
-                "imagen" to card.imagenPersonaje,
-                "imagenRelic" to card.imagenRelic,
-                "imagenTipo" to card.imagenTipo,
-                "description" to card.descripcion,
-                "user" to intent.getStringExtra("email").toString()
-            )
-            db.collection("cartas")
-                .add(carta).addOnSuccessListener {
-                    Log.e(TAG, "Carta Creada")
-                }
-        }
     }
 }

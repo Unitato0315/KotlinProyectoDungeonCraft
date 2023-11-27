@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.tbLogin)
         firebaseauth = FirebaseAuth.getInstance()
-
+        // Inicio de sesion normal
         binding.btnInicio.setOnClickListener {
             if (binding.edEmail.text?.isNotEmpty() == true && binding.edPass.text?.isNotEmpty() == true ){
                 firebaseauth.signInWithEmailAndPassword(binding.edEmail.text.toString(),binding.edPass.text.toString()).addOnCompleteListener {
@@ -63,31 +63,39 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        //Boton encargado de mandarnos a la actividad de registro
         binding.btnRegistr.setOnClickListener {
             val registerIntent = Intent(this, Registro::class.java)
             startActivity(registerIntent)
         }
-
+        // Nos aseguramos que no haya ninguna sesion iniciada
         firebaseauth.signOut()
-
+        // Configuracion para el inicio de sesion con google
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.your_web_client_id))
             .requestEmail()
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(this,gso)
+        // Inicio de sesion con google
         binding.btnGoogle.setOnClickListener {
             loginEnGoogle()
         }
 
 
     }
+    /**
+     * Se encarga de configurar el menu
+     * */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.menu, menu)
         return true
     }
-
+    /**
+     * Las siguientes cuatro funciones se encargan de realizar el login con google y validar los
+     * datos obtenidos
+     * */
     private fun loginEnGoogle(){
         val signInClient = googleSignInClient.signInIntent
         launcherVentanaGoogle.launch(signInClient)
@@ -113,7 +121,6 @@ class MainActivity : AppCompatActivity() {
     }
     private fun actualizarUI(account: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-        //pido un token, y con ese token, si todo va bien obtenga la info.
         firebaseauth.signInWithCredential(credential).addOnCompleteListener {
             if (it.isSuccessful){
                 guardarUsuario(account.email.toString(), account.displayName.toString())
@@ -126,29 +133,32 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Se lanzar el activity del menu principal
+     * */
     private fun irMenuPrincipal(email:String, nombre:String = "Usuario"){
-        Log.e(TAG,"Valores: ${email}, ${nombre}")
         val homeIntent = Intent(this, MenuPrincipal::class.java).apply {
             putExtra("email",email)
             putExtra("nombre",nombre)
         }
         startActivity(homeIntent)
     }
-
+    /**
+     * Configuracion del menu
+     * */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.option_1 -> {
+                //Crea un dialog que contiene un spiner para seleccionar el idioma
                 var selectec: Int = 0
                 val builder = AlertDialog.Builder(this)
                 val inflater = layoutInflater
                 builder.setTitle(R.string.menuOpciones)
                 val dialogLayout = inflater.inflate(R.layout.dialog_option, null)
+                //Cargamos la informacion del spiner y le asignamos que hacer
                 val languageSpinner: Spinner = dialogLayout.findViewById(R.id.spinner2)
-
                 val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,resources.getStringArray(R.array.idiomas))
-
                 languageSpinner.adapter = adapter
-
                 languageSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(
                         parent: AdapterView<*>?,
@@ -163,7 +173,7 @@ class MainActivity : AppCompatActivity() {
                         TODO("Not yet implemented")
                     }
                 }
-
+                // Compruebo el idioma actual del dispositivo para asignarlo al spinner
                 val currentLocale: Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     resources.configuration.locales[0]
                 } else {
@@ -189,6 +199,9 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+    /**
+     * Se encarga de cambiar la configuracion del idioma de toda la aplicacion
+     * */
     fun cambiarIdioma(pos: Int) {
         var languaje :String = ""
         when(pos){
@@ -204,9 +217,12 @@ class MainActivity : AppCompatActivity() {
 
         resources.updateConfiguration(configuration, resources.displayMetrics)
 
-        // Puedes reiniciar la actividad actual para aplicar los cambios
         recreate()
     }
+    /**
+     * Se encarga de comprobar si el usuario de google existe, en caso negativo lo crea en la base
+     * de datos
+     * */
     fun guardarUsuario(email: String, user: String) {
         var al = ArrayList<String>()
         GlobalScope.launch(Dispatchers.IO) {
@@ -220,7 +236,6 @@ class MainActivity : AppCompatActivity() {
                     al.add(document.data.toString())
                 }
 
-                // Realiza acciones en el hilo principal
                 launch(Dispatchers.Main) {
                     // Procesa los resultados aquí
                     if (al.size == 0){
@@ -250,7 +265,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    /**
+     * Se encarga de crear la coleccion de cartas inicial de cada usuario
+     * */
     fun crearCartas(email: String){
         Almacen.Cartas = ArrayList()
         Almacen.Cartas.add(Carta("Arthas", "arthas","relic_sacer", "boss_icon",0))

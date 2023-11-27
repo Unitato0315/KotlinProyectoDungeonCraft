@@ -50,4 +50,8 @@
     <string name="modificar">Edit</string>
     <string name="borrar">Delete</string>
     <string name="cambiarContrasena">Want to change the password?</string>
+    <string name="cancelar">Cancel</string>
+    <string name="noCambios">You have not modified any parameters</string>
+    <string name="tituloEliminar">You are going to delete your user</string>
+    <string name="mensajeEliminar">This leads to the loss of all your user data. Are you sure?</string>
 </resources>

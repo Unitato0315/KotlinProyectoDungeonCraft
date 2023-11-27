@@ -50,4 +50,8 @@
     <string name="modificar">Modificar</string>
     <string name="borrar">Borrar</string>
     <string name="cambiarContrasena">Quieres cambiar la contraseña?</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="noCambios">No has modificado ningun parametro</string>
+    <string name="tituloEliminar">"Vas a eliminar tu usuario "</string>
+    <string name="mensajeEliminar">Esto conlleva a la perdida de todos tus datos de usuario Estas seguro?</string>
 </resources>

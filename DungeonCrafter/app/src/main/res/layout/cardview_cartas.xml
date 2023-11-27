@@ -71,6 +71,7 @@
             android:layout_width="161dp"
             android:layout_height="75dp"
             android:backgroundTint="@color/md_theme_dark_inverseSurface"
+            android:clickable="true"
             android:ems="10"
             android:enabled="false"
             android:gravity="start|top"

@@ -1,6 +1,9 @@
 package com.example.dungeoncrafter
 
 import Modelo.Almacen
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -11,11 +14,13 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dungeoncrafter.databinding.ActivityModificarUsuarioBinding
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.Locale
@@ -25,6 +30,11 @@ class ModificarUsuario : AppCompatActivity() {
     val TAG = "JVVM"
     private lateinit var firebaseauth : FirebaseAuth
     val db = Firebase.firestore
+    var gen = 0
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        lateinit var contextoPrincipal: Context
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityModificarUsuarioBinding.inflate(layoutInflater)
@@ -36,11 +46,20 @@ class ModificarUsuario : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
-
+        // Comprueba el rol del usuario
         if (Almacen.User.rol == 1){
             binding.cbContrasena.visibility = View.INVISIBLE
         }
 
+        binding.edUserReg.setText(Almacen.User.usuario)
+        // Comprueba y selecciona el genero del usuario
+        when(Almacen.User.genero){
+            1 -> binding.rbMale.isChecked = true
+            2 -> binding.rbFemale.isChecked = true
+            3 -> binding.rbOther.isChecked = true
+        }
+
+        //Para activar o desactivar la modificacion de usuarios
         binding.cbContrasena.setOnClickListener {
             if(binding.cbContrasena.isChecked){
                 binding.tfPassReg.visibility = View.VISIBLE
@@ -55,6 +74,134 @@ class ModificarUsuario : AppCompatActivity() {
             }
         }
 
+        binding.rgGen.setOnCheckedChangeListener { group, checkedId ->
+            when(checkedId){
+                R.id.rbMale ->{
+                    gen = 1
+                }
+                R.id.rbFemale ->{
+                    gen = 2
+                }
+                R.id.rbOther ->{
+                    gen = 3
+                }
+            }
+        }
+        // Se encarga de eliminar el usuario actual totalmente
+        binding.btnEliminar.setOnClickListener {
+
+            val builder = AlertDialog.Builder(this)
+            // Creamos un dialog para asegurarnos que el usuario quiere eliminarlo
+            with(builder)
+            {
+                setTitle(R.string.tituloEliminar)
+                setMessage(R.string.mensajeEliminar)
+                setPositiveButton(R.string.borrar, DialogInterface.OnClickListener(function = { dialog: DialogInterface, which: Int ->
+                    // Elimina el usuario de firebaseAuth
+                    val user = Firebase.auth.currentUser!!
+                    user.delete()
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Log.d(TAG, "User account deleted.")
+                            }
+                        }
+
+                    eliminarUsuario()
+                    firebaseauth.signOut()
+
+                    val signInClient = Identity.getSignInClient(contextoPrincipal)
+                    signInClient.signOut()
+
+                    finish()
+                }))
+                setNeutralButton(R.string.cancelar, null)
+                show()
+            }
+
+
+        }
+        // Se encarga de comprobar si hay algun valor modificado
+        binding.btnModificar.setOnClickListener {
+
+            if (Almacen.User.usuario != binding.edUserReg.text.toString() || Almacen.User.genero != gen){
+                guardarModificacion()
+                if (binding.cbContrasena.isChecked){
+                    if(binding.edPassReg.text.toString() == binding.edConfReg.text.toString() && binding.edPassReg.text.toString().isNotEmpty()){
+                        cambiarContraseña()
+                        finish()
+                    }else{
+                        Toast.makeText(this,R.string.errorContrasenas, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }else if (binding.cbContrasena.isChecked){
+                if(binding.edPassReg.text.toString() == binding.edConfReg.text.toString() && binding.edPassReg.text.toString().isNotEmpty()){
+                    cambiarContraseña()
+                    finish()
+                }else{
+                    Toast.makeText(this,R.string.errorContrasenas, Toast.LENGTH_SHORT).show()
+                }
+            }else{
+                Toast.makeText(this,R.string.noCambios, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        contextoPrincipal = this
+    }
+    /**
+     * Se encarga de cambiar la contraseña del usuario en firebaseAuth
+     * */
+    private fun cambiarContraseña() {
+        val user = Firebase.auth.currentUser
+        user!!.updatePassword(binding.edPassReg.text.toString())
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "User password updated.")
+                }
+            }
+    }
+    /**
+     * Elimina al usuario de la base de datos y borra todas las cartas asignadas al mismo
+     * */
+    private fun eliminarUsuario() {
+        db.collection("users")
+            .whereEqualTo("email", Almacen.User.correo)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    db.collection("users")
+                        .document(document.id)
+                        .delete()
+                        .toString()
+                }
+            }
+        db.collection("cartas")
+            .whereEqualTo("user", Almacen.User.correo)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    db.collection("cartas")
+                        .document(document.id)
+                        .delete()
+                        .toString()
+                }
+            }
+    }
+    /**
+     * Guarda la modificacion de datos realizada
+     * */
+    fun guardarModificacion() {
+        var user = hashMapOf(
+            "usuario" to binding.edUserReg.text.toString(),
+            "email" to Almacen.User.correo,
+            "genero" to gen,
+            "roles" to Almacen.User.rol,
+            "Monedas" to 0
+        )
+        db.collection("users")
+            .document(Almacen.User.correo)
+            .set(user).addOnSuccessListener {
+                Log.d(TAG, "crea")
+            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -66,12 +213,9 @@ class ModificarUsuario : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.option_1 -> {
-                Log.e(TAG, firebaseauth.currentUser.toString())
                 firebaseauth.signOut()
-
                 val signInClient = Identity.getSignInClient(this)
                 signInClient.signOut()
-                Log.e(TAG,"Cerrada sesión completamente")
                 finish()
             }
             R.id.option_2 -> {

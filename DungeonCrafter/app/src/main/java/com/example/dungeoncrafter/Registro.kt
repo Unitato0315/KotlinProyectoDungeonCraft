@@ -39,6 +39,7 @@ class Registro : AppCompatActivity() {
         binding.tbRegistro.setNavigationOnClickListener {
             finish()
         }
+        //Se encarga de validar todas las condiciones para crear un usuario
         binding.btnRegistr.setOnClickListener {
             if (binding.edEmailReg.text?.isNotEmpty() == true && binding.edPassReg.text?.isNotEmpty() == true && gen != 0 ){
                 if (binding.edPassReg.text.toString() == binding.edConfReg.text.toString()){
@@ -88,6 +89,9 @@ class Registro : AppCompatActivity() {
         return true
     }
 
+    /**
+     * Guarda el usuario en la base de datos
+     * */
     fun guardarUsuario(){
         var user = hashMapOf(
             "usuario" to binding.edUserReg.text.toString(),
@@ -101,9 +105,6 @@ class Registro : AppCompatActivity() {
         db.collection("users")
             .document(user.get("email").toString()) //Será la clave del documento.
             .set(user).addOnSuccessListener {
-                Toast.makeText(this, "Almacenado",Toast.LENGTH_SHORT).show()
-            }.addOnFailureListener{
-                Toast.makeText(this, "Ha ocurrido un error",Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -215,6 +216,9 @@ class Registro : AppCompatActivity() {
 
     }
 
+    /**
+     * Para que cuando vuelva aqui se cierre de forma automatica
+     * */
     override fun onRestart() {
         super.onRestart()
         finish()

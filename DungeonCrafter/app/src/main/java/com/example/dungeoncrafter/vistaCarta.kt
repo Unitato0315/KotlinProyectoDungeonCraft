@@ -128,7 +128,9 @@ class vistaCarta : AppCompatActivity() {
         // Puedes reiniciar la actividad actual para aplicar los cambios
         recreate()
     }
-
+    /**
+     * Se encarga de dibujar los elementos de la carta seleccionada en el recyclerView
+     * */
     fun dibujarCarta(carta: Carta){
         binding.tvNombre.text = carta.nombre
 
