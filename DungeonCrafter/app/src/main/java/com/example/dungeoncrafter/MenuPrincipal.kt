@@ -1,11 +1,14 @@
 package com.example.dungeoncrafter
 
+import Auxiliar.Conexion
 import Modelo.Almacen
 import Modelo.Carta
 import Modelo.Users
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -16,10 +19,10 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dungeoncrafter.databinding.ActivityMenuPrincipalBinding
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -48,7 +51,31 @@ class MenuPrincipal : AppCompatActivity() {
         binding.btnModificarPrin.setOnClickListener {
             cargarDatosUsuario()
         }
+
+        binding.btnJugar.setOnClickListener {
+            jugar()
+        }
+        binding.tvCoins.text =" "+Almacen.User.monedas.toString()
         contextoPrincipal = this
+
+        val currentLocale: Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            resources.configuration.locales[0]
+        } else {
+            @Suppress("DEPRECATION")
+            resources.configuration.locale
+        }
+        val languageCode = currentLocale.language
+        if (languageCode.toString() != Almacen.Configuracion.idioma){
+            val locale = Locale(Almacen.Configuracion.idioma)
+            Locale.setDefault(locale)
+
+            val configuration = Configuration()
+            configuration.setLocale(locale)
+
+            resources.updateConfiguration(configuration, resources.displayMetrics)
+            recreate()
+        }
+
         //supportActionBar?.setDisplayHomeAsUpEnabled(true) //BOTON DE RETROCEDER
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -70,7 +97,7 @@ class MenuPrincipal : AppCompatActivity() {
             }
             R.id.option_2 -> {
                 var selectec: Int = 0
-                val builder = AlertDialog.Builder(this)
+                val builder = MaterialAlertDialogBuilder(this)
                 val inflater = layoutInflater
                 builder.setTitle(R.string.menuOpciones)
                 val dialogLayout = inflater.inflate(R.layout.dialog_option, null)
@@ -118,6 +145,30 @@ class MenuPrincipal : AppCompatActivity() {
                 builder.setPositiveButton(R.string.guardar) { _, i -> cambiarIdioma(selectec)}
                 builder.show()
             }
+            R.id.opcion_web -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Unitato0315/KotlinProyectoDungeonCraft.git")))
+            R.id.opcion_acercade -> {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(resources.getString(R.string.acercaDeTitulo))
+                    .setMessage(resources.getString(R.string.acercaDeContenido))
+                    .show()
+            }
+            R.id.opcion_correo ->{
+                val destinatario = "jvsonic9@gmail.com"
+                val asunto = resources.getString(R.string.Contacto)
+
+
+                // Crear un Intent con la acción ACTION_SENDTO para enviar el correo
+                val intent = Intent(Intent.ACTION_SENDTO).apply {
+                    data = Uri.parse("mailto:") // Establecer el esquema como "mailto:"
+                    putExtra(Intent.EXTRA_EMAIL, arrayOf(destinatario)) // Establecer el destinatario del correo
+                    putExtra(Intent.EXTRA_SUBJECT, asunto) // Establecer el asunto del correo
+                    putExtra(Intent.EXTRA_TEXT, "") // Establecer el cuerpo del correo
+                }
+
+                // Verificar si existe alguna aplicación de correo electrónico para manejar el intent
+
+                startActivity(intent)
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -127,6 +178,9 @@ class MenuPrincipal : AppCompatActivity() {
             0-> languaje = "es"
             1-> languaje = "en"
         }
+
+        Almacen.Configuracion.idioma = languaje
+        Conexion.modConfiguracion(this, Almacen.Configuracion.usuario, Almacen.Configuracion)
 
         val locale = Locale(languaje)
         Locale.setDefault(locale)
@@ -165,11 +219,16 @@ class MenuPrincipal : AppCompatActivity() {
             .get()
             .addOnSuccessListener{
                 for (document in it){
-                    Almacen.User = Users(document.get("usuario").toString(),document.get("roles").toString().toInt(),document.get("email").toString(),document.get("genero").toString().toInt())
+                    Almacen.User = Users(document.get("usuario").toString(),document.get("roles").toString().toInt(),document.get("email").toString(),document.get("genero").toString().toInt(),document.get("Monedas").toString().toInt())
                 }
             }.addOnCompleteListener{
                     moverAModificar()
             }
+    }
+
+    fun jugar(){
+        val modificarIntent: Intent = Intent(this, SimonDice::class.java)
+        startActivity(modificarIntent)
     }
 
     fun moverAModificar() {

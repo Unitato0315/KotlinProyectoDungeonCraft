@@ -1,7 +1,12 @@
 package com.example.dungeoncrafter
 
+import Auxiliar.Conexion
+import Modelo.Almacen
 import Modelo.Carta
+import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,16 +17,22 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import androidx.appcompat.app.AlertDialog
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dungeoncrafter.databinding.ActivityVistaCartaBinding
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.storage
+import java.io.File
 import java.util.Locale
 
 class vistaCarta : AppCompatActivity() {
     lateinit var binding: ActivityVistaCartaBinding
     private lateinit var firebaseauth : FirebaseAuth
+    var storage = Firebase.storage
+    var storageRef = storage.reference
     val TAG = "JVVM"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +69,7 @@ class vistaCarta : AppCompatActivity() {
             }
             R.id.option_2 -> {
                 var selectec: Int = 0
-                val builder = AlertDialog.Builder(this)
+                val builder = MaterialAlertDialogBuilder(this)
                 val inflater = layoutInflater
                 builder.setTitle(R.string.menuOpciones)
                 val dialogLayout = inflater.inflate(R.layout.dialog_option, null)
@@ -106,6 +117,31 @@ class vistaCarta : AppCompatActivity() {
                 builder.setPositiveButton(R.string.guardar) { _, i -> cambiarIdioma(selectec)}
                 builder.show()
             }
+            R.id.opcion_web -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Unitato0315/KotlinProyectoDungeonCraft.git")))
+            R.id.opcion_acercade -> {
+
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(resources.getString(R.string.acercaDeTitulo))
+                    .setMessage(resources.getString(R.string.acercaDeContenido))
+                    .show()
+            }
+            R.id.opcion_correo ->{
+                val destinatario = "jvsonic9@gmail.com"
+                val asunto = resources.getString(R.string.Contacto)
+
+
+                // Crear un Intent con la acción ACTION_SENDTO para enviar el correo
+                val intent = Intent(Intent.ACTION_SENDTO).apply {
+                    data = Uri.parse("mailto:") // Establecer el esquema como "mailto:"
+                    putExtra(Intent.EXTRA_EMAIL, arrayOf(destinatario)) // Establecer el destinatario del correo
+                    putExtra(Intent.EXTRA_SUBJECT, asunto) // Establecer el asunto del correo
+                    putExtra(Intent.EXTRA_TEXT, "") // Establecer el cuerpo del correo
+                }
+
+                // Verificar si existe alguna aplicación de correo electrónico para manejar el intent
+
+                startActivity(intent)
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -116,6 +152,9 @@ class vistaCarta : AppCompatActivity() {
             0-> languaje = "es"
             1-> languaje = "en"
         }
+
+        Almacen.Configuracion.idioma = languaje
+        Conexion.modConfiguracion(this, Almacen.Configuracion.usuario, Almacen.Configuracion)
 
         val locale = Locale(languaje)
         Locale.setDefault(locale)
@@ -136,13 +175,21 @@ class vistaCarta : AppCompatActivity() {
 
         val descRecur = this.resources.getStringArray(this.resources.getIdentifier("descripcion","array",this.packageName))
         binding.edtmlDescripcion.setText(descRecur[carta.descripcion])
-        val uri1 = "@drawable/"+carta.imagenPersonaje
+        //val uri1 = "@drawable/"+carta.imagenPersonaje
         val uri2 = "@drawable/"+carta.imagenRelic
         val uri3 = "@drawable/"+carta.imagenTipo
-        val imageResource: Int =
-            this.resources.getIdentifier(uri1, null, this.packageName)
-        var res: Drawable = this.resources.getDrawable(imageResource)
-        binding.imgPersonaje.setImageDrawable(res)
+        //val imageResource: Int =
+        //    this.resources.getIdentifier(uri1, null, this.packageName)
+        //var res: Drawable = this.resources.getDrawable(imageResource)
+        var spaceRef = storageRef.child("cartas/${carta.imagenPersonaje}.jpg")
+
+        val localfile  = File.createTempFile("tempImage","jpg")
+        spaceRef.getFile(localfile).addOnSuccessListener {
+            val bitmap = BitmapFactory.decodeFile(localfile.absolutePath)
+            binding.imgPersonaje.setImageBitmap(bitmap)
+        }.addOnFailureListener{
+            Toast.makeText(this,"Algo ha fallado en la descarga", Toast.LENGTH_SHORT).show()
+        }
         val imageResource2: Int =
             this.resources.getIdentifier(uri2, null, this.packageName)
         var res2: Drawable = this.resources.getDrawable(imageResource2)

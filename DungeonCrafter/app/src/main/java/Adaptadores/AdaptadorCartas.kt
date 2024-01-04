@@ -4,6 +4,7 @@ import Modelo.Carta
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
@@ -11,14 +12,19 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dungeoncrafter.Coleccion
 import com.example.dungeoncrafter.R
 import com.example.dungeoncrafter.vistaCarta
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
+import java.io.File
 
 class AdaptadorCartas (var cartas : ArrayList<Carta>, var  context: Context) : RecyclerView.Adapter<AdaptadorCartas.ViewHolder>() {
+    val TAG = "JVVM"
 
     companion object {
         var seleccionado: Int = -1
@@ -56,6 +62,7 @@ class AdaptadorCartas (var cartas : ArrayList<Carta>, var  context: Context) : R
         val imTipe = view.findViewById(R.id.imgTipo) as ImageView
         val cartaCompleta = view.findViewById(R.id.cardView) as CardView
 
+
         @SuppressLint("ResourceAsColor")
         fun bind(
             carta: Carta,
@@ -64,16 +71,28 @@ class AdaptadorCartas (var cartas : ArrayList<Carta>, var  context: Context) : R
             miAdaptadorRecycler: AdaptadorCartas
         ) {
             nombrePersonaje.text = carta.nombre
-
+            var storage = Firebase.storage
+            var storageRef = storage.reference
             val descRecur = context.resources.getStringArray(context.resources.getIdentifier("descripcion","array",context.packageName))
             descripcion.setText(descRecur[carta.descripcion])
-            val uri1 = "@drawable/"+carta.imagenPersonaje
+            //val uri1 = "@drawable/"+carta.imagenPersonaje
             val uri2 = "@drawable/"+carta.imagenRelic
             val uri3 = "@drawable/"+carta.imagenTipo
-            val imageResource: Int =
-                context.resources.getIdentifier(uri1, null, context.packageName)
-            var res: Drawable = context.resources.getDrawable(imageResource)
-            imPersonaje.setImageDrawable(res)
+            //val imageResource: Int =
+            //    context.resources.getIdentifier(uri1, null, context.packageName)
+            //var res: Drawable = context.resources.getDrawable(imageResource)
+            //imPersonaje.setImageDrawable(res)
+
+            var spaceRef = storageRef.child("cartas/${carta.imagenPersonaje}.jpg")
+
+            val localfile  = File.createTempFile("tempImage","jpg")
+            spaceRef.getFile(localfile).addOnSuccessListener {
+                val bitmap = BitmapFactory.decodeFile(localfile.absolutePath)
+                imPersonaje.setImageBitmap(bitmap)
+            }.addOnFailureListener{
+                Toast.makeText(context,"Algo ha fallado en la descarga", Toast.LENGTH_SHORT).show()
+            }
+
             val imageResource2: Int =
                 context.resources.getIdentifier(uri2, null, context.packageName)
             var res2: Drawable = context.resources.getDrawable(imageResource2)

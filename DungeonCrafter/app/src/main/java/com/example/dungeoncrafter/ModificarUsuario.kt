@@ -1,9 +1,12 @@
 package com.example.dungeoncrafter
 
+import Auxiliar.Conexion
 import Modelo.Almacen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +22,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dungeoncrafter.databinding.ActivityModificarUsuarioBinding
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -185,6 +189,7 @@ class ModificarUsuario : AppCompatActivity() {
                         .toString()
                 }
             }
+        Conexion.delConfiguracion(this, Almacen.Configuracion.usuario)
     }
     /**
      * Guarda la modificacion de datos realizada
@@ -220,7 +225,7 @@ class ModificarUsuario : AppCompatActivity() {
             }
             R.id.option_2 -> {
                 var selectec: Int = 0
-                val builder = AlertDialog.Builder(this)
+                val builder = MaterialAlertDialogBuilder(this)
                 val inflater = layoutInflater
                 builder.setTitle(R.string.menuOpciones)
                 val dialogLayout = inflater.inflate(R.layout.dialog_option, null)
@@ -268,6 +273,31 @@ class ModificarUsuario : AppCompatActivity() {
                 builder.setPositiveButton(R.string.guardar) { _, i -> cambiarIdioma(selectec)}
                 builder.show()
             }
+            R.id.opcion_web -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Unitato0315/KotlinProyectoDungeonCraft.git")))
+            R.id.opcion_acercade -> {
+
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(resources.getString(R.string.acercaDeTitulo))
+                    .setMessage(resources.getString(R.string.acercaDeContenido))
+                    .show()
+            }
+            R.id.opcion_correo ->{
+                val destinatario = "jvsonic9@gmail.com"
+                val asunto = resources.getString(R.string.Contacto)
+
+
+                // Crear un Intent con la acción ACTION_SENDTO para enviar el correo
+                val intent = Intent(Intent.ACTION_SENDTO).apply {
+                    data = Uri.parse("mailto:") // Establecer el esquema como "mailto:"
+                    putExtra(Intent.EXTRA_EMAIL, arrayOf(destinatario)) // Establecer el destinatario del correo
+                    putExtra(Intent.EXTRA_SUBJECT, asunto) // Establecer el asunto del correo
+                    putExtra(Intent.EXTRA_TEXT, "") // Establecer el cuerpo del correo
+                }
+
+                // Verificar si existe alguna aplicación de correo electrónico para manejar el intent
+
+                startActivity(intent)
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -277,6 +307,9 @@ class ModificarUsuario : AppCompatActivity() {
             0-> languaje = "es"
             1-> languaje = "en"
         }
+
+        Almacen.Configuracion.idioma = languaje
+        Conexion.modConfiguracion(this, Almacen.Configuracion.usuario, Almacen.Configuracion)
 
         val locale = Locale(languaje)
         Locale.setDefault(locale)

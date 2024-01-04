@@ -14,4 +14,19 @@
         android:iconTint="@color/md_theme_dark_onBackground"
         android:title="@string/opciones"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/opcion_web"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/web" />
+    <item
+        android:id="@+id/opcion_acercade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/acercaDe" />
+    <item
+        android:id="@+id/opcion_correo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/Correo" />
 </menu>

@@ -1,8 +1,16 @@
 package com.example.dungeoncrafter
 
+import Auxiliar.Conexion
 import Modelo.Almacen
 import Modelo.Carta
+import Modelo.Configuracion
+import Modelo.Users
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -14,9 +22,12 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.example.dungeoncrafter.databinding.ActivityRegistroBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -28,6 +39,9 @@ class Registro : AppCompatActivity() {
     val db = Firebase.firestore
     val TAG = "JVVM"
     var gen = 0
+    private val canalNombre = "prueba"
+    private val canalId = "CanalDePrueva"
+    private val notificacionId = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegistroBinding.inflate(layoutInflater)
@@ -48,6 +62,8 @@ class Registro : AppCompatActivity() {
                             if (it.isSuccessful){
                                 crearCartas()
                                 guardarUsuario()
+                                buscarConf(binding.edEmailReg.text.toString())
+                                cambiarUltima(binding.edEmailReg.text.toString())
                                 irMenuPrincipal(it.result?.user?.email?:"")
                                 Toast.makeText(this, R.string.creado, Toast.LENGTH_SHORT).show()
 
@@ -106,13 +122,16 @@ class Registro : AppCompatActivity() {
             .document(user.get("email").toString()) //Será la clave del documento.
             .set(user).addOnSuccessListener {
             }
+        Users(user["usuario"].toString(),user["roles"].toString().toInt(),user["email"].toString(),user["genero"].toString().toInt(),user["Monedas"].toString().toInt())
+        crearCanalNotificacion()
+        crearNotificacion(user["email"].toString())
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.option_1 -> {
                 var selectec: Int = 0
-                val builder = AlertDialog.Builder(this)
+                val builder = MaterialAlertDialogBuilder(this)
                 val inflater = layoutInflater
                 builder.setTitle(R.string.menuOpciones)
                 val dialogLayout = inflater.inflate(R.layout.dialog_option, null)
@@ -182,7 +201,7 @@ class Registro : AppCompatActivity() {
         recreate()
     }
     private fun irMenuPrincipal(email:String, nombre:String = "Usuario"){
-        Log.e(TAG,"Valores: ${email}, ${nombre}")
+        Almacen.User = Users(binding.edUserReg.text.toString(),0,binding.edEmailReg.text.toString(),gen,0)
         val homeIntent = Intent(this, MenuPrincipal::class.java).apply {
             putExtra("email",email)
             putExtra("nombre",nombre)
@@ -214,6 +233,68 @@ class Registro : AppCompatActivity() {
                 .add(carta)
         }
 
+    }
+
+    fun buscarConf(email:String ){
+        val c = Conexion.buscarConfiguracion(this, email)
+        if(c == null){
+            crearConf(email)
+        }
+    }
+
+    fun crearConf(email:String){
+        val currentLocale: Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            resources.configuration.locales[0]
+        } else {
+            @Suppress("DEPRECATION")
+            resources.configuration.locale
+        }
+        val languageCode = currentLocale.language
+        val c = Configuracion(email,languageCode.toString(),"no","si")
+        Conexion.addConfiguracion(this, c)
+    }
+
+    fun cambiarUltima(email:String){
+        var configuraciones = Conexion.obtenerConfiguraciones(this);
+        for (c: Configuracion in configuraciones){
+            if (c.usuario != email){
+                Conexion.modConfiguracionUltimo(this, c.usuario, "no")
+            }else{
+                Almacen.Configuracion = c
+                Conexion.modConfiguracionUltimo(this, c.usuario, "si")
+            }
+        }
+
+    }
+    /*
+    * Creacion de notificaciones
+    * */
+    private fun crearCanalNotificacion(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val canalImportancia = NotificationManager.IMPORTANCE_HIGH
+            val canal = NotificationChannel(canalId, canalNombre, canalImportancia)
+
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(canal)
+        }
+    }
+
+    private fun crearNotificacion(email: String){
+        val notificacion = NotificationCompat.Builder(this,canalId).also{
+            it.setSmallIcon(R.mipmap.ic_launcher_app_icon)
+            it.setContentTitle(getString(R.string.Bienvenido))
+            it.setContentText(getString(R.string.Mensaje)+ email)
+        }.build()
+
+        val notificationManager = NotificationManagerCompat.from(this)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        notificationManager.notify(notificacionId,notificacion)
     }
 
     /**

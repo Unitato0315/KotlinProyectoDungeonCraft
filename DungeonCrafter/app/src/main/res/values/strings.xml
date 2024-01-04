@@ -54,4 +54,20 @@
     <string name="noCambios">No has modificado ningun parametro</string>
     <string name="tituloEliminar">"Vas a eliminar tu usuario "</string>
     <string name="mensajeEliminar">Esto conlleva a la perdida de todos tus datos de usuario Estas seguro?</string>
+    <string name="web">Enlace Github</string>
+    <string name="acercaDe">Acerca de</string>
+    <string name="Correo">Contactanos</string>
+    <string name="acercaDeTitulo">ACERCA DE:</string>
+    <string name="acercaDeContenido">Esto es un pequeño proyecto creado en kotlin con android studio</string>
+    <string name="Contacto">Contactar con admin de dungeonCrafter</string>
+    <string name="siguiente">Siguiente</string>
+    <string name="reiniciar">Reiniciar</string>
+    <string name="acierto">Has acertado, Ganaras</string>
+    <string name="moneda">Monedas</string>
+    <string name="fallo">Te has equivocado</string>
+    <string name="Iniciar">Iniciar</string>
+    <string name="nivel">Nivel</string>
+    <string name="SimonDice">Simon Dice</string>
+    <string name="Bienvenido">Bienvenido</string>
+    <string name="Mensaje">Gracias por crear tu cuenta</string>
 </resources>

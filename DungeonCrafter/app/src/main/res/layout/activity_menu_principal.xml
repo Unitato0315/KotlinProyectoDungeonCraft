@@ -8,18 +8,6 @@
     tools:context=".MenuPrincipal">
 
     <Button
-        android:id="@+id/btnSobres"
-        style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="293dp"
-        android:layout_height="80dp"
-        android:text="@string/sobres"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.414" />
-
-    <Button
         android:id="@+id/btnJugar"
         style="@style/Widget.Material3.Button.ElevatedButton"
         android:layout_width="293dp"
@@ -30,7 +18,43 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.231" />
+        app:layout_constraintVertical_bias="0.281" />
+
+    <Button
+        android:id="@+id/btnColeccion"
+        style="@style/Widget.Material3.Button.ElevatedButton"
+        android:layout_width="293dp"
+        android:layout_height="80dp"
+        android:text="@string/coleccion"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.652" />
+
+    <Button
+        android:id="@+id/btnSobres"
+        style="@style/Widget.Material3.Button.ElevatedButton"
+        android:layout_width="293dp"
+        android:layout_height="80dp"
+        android:text="@string/sobres"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.465" />
+
+    <Button
+        android:id="@+id/btnModificarPrin"
+        style="@style/Widget.Material3.Button.ElevatedButton"
+        android:layout_width="293dp"
+        android:layout_height="80dp"
+        android:text="@string/modificarUser"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.852" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/tbMenuPrincipal"
@@ -46,27 +70,31 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
-    <Button
-        android:id="@+id/btnColeccion"
-        style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="293dp"
-        android:layout_height="80dp"
-        android:text="@string/coleccion"
+    <ImageView
+        android:id="@+id/imgCartel"
+        android:layout_width="124dp"
+        android:layout_height="108dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.944"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.602" />
+        app:layout_constraintVertical_bias="0.105"
+        app:srcCompat="@drawable/cartel" />
 
-    <Button
-        android:id="@+id/btnModificarPrin"
-        style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="293dp"
-        android:layout_height="80dp"
-        android:text="@string/modificarUser"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.801" />
+    <TextView
+        android:id="@+id/tvCoins"
+        android:layout_width="88dp"
+        android:layout_height="19dp"
+        android:layout_weight="1"
+        android:drawableLeft="@drawable/coins_solid"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/imgCartel"
+        app:layout_constraintEnd_toEndOf="@+id/imgCartel"
+        app:layout_constraintHorizontal_bias="0.527"
+        app:layout_constraintStart_toStartOf="@+id/imgCartel"
+        app:layout_constraintTop_toTopOf="@+id/imgCartel"
+        app:layout_constraintVertical_bias="0.494" />
 </androidx.constraintlayout.widget.ConstraintLayout>

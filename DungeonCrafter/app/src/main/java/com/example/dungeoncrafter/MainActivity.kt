@@ -1,8 +1,21 @@
 package com.example.dungeoncrafter
 
+import Auxiliar.Conexion.addConfiguracion
+import Auxiliar.Conexion.buscarConfiguracion
+import Auxiliar.Conexion.delConfiguracion
+import Auxiliar.Conexion.modConfiguracion
+import Auxiliar.Conexion.modConfiguracionUltimo
+import Auxiliar.Conexion.obtenerConfiguraciones
 import Modelo.Almacen
 import Modelo.Carta
+import Modelo.Configuracion
+import Modelo.Users
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -16,14 +29,17 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.example.dungeoncrafter.databinding.ActivityMainBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.ktx.firestore
@@ -38,6 +54,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var firebaseauth : FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var ultimoUsuario: Configuracion
+
+    private val canalNombre = "prueba"
+    private val canalId = "CanalDePrueva"
+    private val notificacionId = 0
 
     var db =Firebase.firestore
     val TAG = "JVVM"
@@ -52,7 +73,9 @@ class MainActivity : AppCompatActivity() {
             if (binding.edEmail.text?.isNotEmpty() == true && binding.edPass.text?.isNotEmpty() == true ){
                 firebaseauth.signInWithEmailAndPassword(binding.edEmail.text.toString(),binding.edPass.text.toString()).addOnCompleteListener {
                     if (it.isSuccessful){
-                        irMenuPrincipal(it.result?.user?.email?:"")
+                        buscarConf(binding.edEmail.text.toString())
+                        cambiarUltima(binding.edEmail.text.toString())
+                        cargarDatosUsuario(it.result?.user?.email?:"")
                         Toast.makeText(this, R.string.inicio, Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this, R.string.errorInicio, Toast.LENGTH_SHORT).show()
@@ -62,7 +85,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, R.string.datosVacios, Toast.LENGTH_SHORT).show()
             }
         }
-
         //Boton encargado de mandarnos a la actividad de registro
         binding.btnRegistr.setOnClickListener {
             val registerIntent = Intent(this, Registro::class.java)
@@ -81,8 +103,36 @@ class MainActivity : AppCompatActivity() {
         binding.btnGoogle.setOnClickListener {
             loginEnGoogle()
         }
+        //var configuraciones = ArrayList<Configuracion>()
+        var configuraciones = obtenerConfiguraciones(this);
+        Log.d(TAG,configuraciones.size.toString())
+        if (configuraciones.size != 0){
+            for (c: Configuracion in configuraciones){
+                if (c.ultimo == "si"){
+                    ultimoUsuario = c
+                    val currentLocale: Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        resources.configuration.locales[0]
+                    } else {
+                        @Suppress("DEPRECATION")
+                        resources.configuration.locale
+                    }
+                    val languageCode = currentLocale.language
+                    if (languageCode.toString() != c.idioma){
+                        val locale = Locale(c.idioma)
+                        Locale.setDefault(locale)
+
+                        val configuration = Configuration()
+                        configuration.setLocale(locale)
+
+                        resources.updateConfiguration(configuration, resources.displayMetrics)
+                        recreate()
+                    }
 
 
+                }
+            }
+        }
+        //addMonedas(this)
     }
     /**
      * Se encarga de configurar el menu
@@ -125,7 +175,9 @@ class MainActivity : AppCompatActivity() {
             if (it.isSuccessful){
                 guardarUsuario(account.email.toString(), account.displayName.toString())
                 Toast.makeText(this,R.string.inicio, Toast.LENGTH_SHORT).show()
-                irMenuPrincipal(account.email.toString(), account.displayName.toString())
+                buscarConf(account.email.toString())
+                cambiarUltima(account.email.toString())
+                cargarDatosUsuario(account.email.toString(), account.displayName.toString())
             }
             else {
                 Toast.makeText(this,it.exception.toString(), Toast.LENGTH_SHORT).show()
@@ -137,6 +189,7 @@ class MainActivity : AppCompatActivity() {
      * Se lanzar el activity del menu principal
      * */
     private fun irMenuPrincipal(email:String, nombre:String = "Usuario"){
+        delConfiguracion(this, "temporal")
         val homeIntent = Intent(this, MenuPrincipal::class.java).apply {
             putExtra("email",email)
             putExtra("nombre",nombre)
@@ -151,7 +204,7 @@ class MainActivity : AppCompatActivity() {
             R.id.option_1 -> {
                 //Crea un dialog que contiene un spiner para seleccionar el idioma
                 var selectec: Int = 0
-                val builder = AlertDialog.Builder(this)
+                val builder = MaterialAlertDialogBuilder(this)
                 val inflater = layoutInflater
                 builder.setTitle(R.string.menuOpciones)
                 val dialogLayout = inflater.inflate(R.layout.dialog_option, null)
@@ -173,7 +226,7 @@ class MainActivity : AppCompatActivity() {
                         TODO("Not yet implemented")
                     }
                 }
-                // Compruebo el idioma actual del dispositivo para asignarlo al spinner
+                // Compruebo el idioma actual del dispositivo para comprobar que es el mismo que el usuario
                 val currentLocale: Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     resources.configuration.locales[0]
                 } else {
@@ -208,7 +261,13 @@ class MainActivity : AppCompatActivity() {
             0-> languaje = "es"
             1-> languaje = "en"
         }
-
+        if(ultimoUsuario.usuario != "temporal"){
+            modConfiguracionUltimo(this,ultimoUsuario.usuario,"no")
+            addConfiguracion(this,Configuracion("temporal",languaje,"no","si"))
+        }else{
+            ultimoUsuario.idioma = languaje
+            modConfiguracion(this,ultimoUsuario.usuario,ultimoUsuario)
+        }
         val locale = Locale(languaje)
         Locale.setDefault(locale)
 
@@ -237,6 +296,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 launch(Dispatchers.Main) {
+
                     // Procesa los resultados aquí
                     if (al.size == 0){
                         var user = hashMapOf(
@@ -246,8 +306,6 @@ class MainActivity : AppCompatActivity() {
                             "roles" to 1,
                             "Monedas" to 0
                         )
-
-
                         // Si no existe el documento lo crea, si existe lo remplaza.
                         db.collection("users")
                             .document(user["email"].toString())
@@ -255,6 +313,9 @@ class MainActivity : AppCompatActivity() {
                                 Log.d(TAG, "crea")
                             }
                         crearCartas(email)
+                        Users(user["usuario"].toString(),user["roles"].toString().toInt(),user["email"].toString(),user["genero"].toString().toInt(),user["Monedas"].toString().toInt())
+                        crearCanalNotificacion()
+                        crearNotificacion(user["email"].toString())
                     }else{
                         Log.d(TAG, "No lo crea")
                     }
@@ -295,6 +356,91 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+    fun buscarConf(email:String ){
+        val c = buscarConfiguracion(this, email)
+        if(c == null){
+            crearConf(email)
+        }else{
+            when(c.idioma){
+                "es" -> cambiarIdioma(0)
+                "en" -> cambiarIdioma(1)
+            }
+        }
+
+    }
+
+    fun crearConf(email:String){
+        val currentLocale: Locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            resources.configuration.locales[0]
+        } else {
+            @Suppress("DEPRECATION")
+            resources.configuration.locale
+        }
+        val languageCode = currentLocale.language
+        val c = Configuracion(email,languageCode.toString(),"no","si")
+        addConfiguracion(this,c)
+    }
+
+    fun cambiarUltima(email:String){
+        var configuraciones = obtenerConfiguraciones(this);
+        for (c: Configuracion in configuraciones){
+            if (c.usuario != email){
+                modConfiguracionUltimo(this, c.usuario,"no")
+            }else{
+                Almacen.Configuracion = c
+                modConfiguracionUltimo(this, c.usuario,"si")
+            }
+        }
+    }
+
+    fun cargarDatosUsuario(email: String, name: String = "Usuario"){
+        var users : ArrayList<Users> = ArrayList()
+        Log.d(TAG,email)
+        db.collection("users")
+            .whereEqualTo("email",email)
+            .get()
+            .addOnSuccessListener{
+                Log.d(TAG,email)
+                for (document in it){
+                    Almacen.User = Users(document.get("usuario").toString(),document.get("roles").toString().toInt(),document.get("email").toString(),document.get("genero").toString().toInt(),document.get("Monedas").toString().toInt())
+                    Log.d(TAG,Almacen.User.toString())
+                }
+            }.addOnCompleteListener{
+                irMenuPrincipal(email, name)
+            }
+    }
+    /*
+    * Creacion de notificaciones
+    * */
+    private fun crearCanalNotificacion(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val canalImportancia = NotificationManager.IMPORTANCE_HIGH
+            val canal = NotificationChannel(canalId, canalNombre, canalImportancia)
+
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(canal)
+        }
+    }
+
+    private fun crearNotificacion(email: String){
+        val notificacion = NotificationCompat.Builder(this,canalId).also{
+            it.setSmallIcon(R.mipmap.ic_launcher_app_icon)
+            it.setContentTitle(getString(R.string.Bienvenido))
+            it.setContentText(getString(R.string.Mensaje)+ email)
+        }.build()
+
+        val notificationManager = NotificationManagerCompat.from(this)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        notificationManager.notify(notificacionId,notificacion)
+    }
+
     override fun onRestart() {
         super.onRestart()
         recreate()
